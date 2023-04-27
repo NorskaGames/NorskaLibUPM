@@ -1,5 +1,5 @@
-# NorskaGine
-Collection of reusable scripts, tools and frameworks for game development in Unity Engine.
+# NorskaLibUPM
+Adaptation of a NorskaLib repository to be used with Unity Package Manager. 
 ## Content
 * Core
 * Tools
