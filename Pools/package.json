@@ -1,0 +1,15 @@
+{
+  "name": "com.norska-lib.pools",
+  "version": "0.1.0",
+  "displayName": "NorskaLib Pools",
+  "description": "Simple MonoBehaviour pool implementation.",
+  "unity": "2019.1",
+  "keywords": [
+    "tools"
+  ],
+  "author": {
+    "name": "Norska Games",
+    "email": "norskagames@gmail.com"
+  },
+  "type": "tool"
+}

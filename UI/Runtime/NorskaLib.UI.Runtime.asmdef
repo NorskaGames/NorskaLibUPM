@@ -1,0 +1,19 @@
+{
+    "name": "NorskaLib.UI",
+    "rootNamespace": "NorskaLib",
+    "references": [
+        "NorskaLib.Core",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "Demigant.DoTween"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
