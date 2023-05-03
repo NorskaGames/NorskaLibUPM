@@ -1,19 +1,11 @@
 using NorskaLib.Extensions;
 using NorskaLib.Utilities;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-// TO DO:
-// Fix sorting
-namespace NorskaLib.UI
+namespace NorskaLib.UI.Markers
 {
-    using SortData  = MarkerWidgetSortData;
-    using Widget    = MarkerWidget;
-    using Entry     = MarkerEntry;
-
-    public abstract class MarkersOverlay : Window
+    public abstract class MarkersDisplay<E> : MonoBehaviour where E : MarkerEntry
     {
         #region Dependencies
 
@@ -31,13 +23,15 @@ namespace NorskaLib.UI
 
         [Tooltip("Determines normalized screen position, calculated via Camera.WorldToScreenPoint(MarkerEntry.PivotPosition). " +
             "Keep it slightly over 1.0, to avoid widgets dissapearing at the edge of the screen.")]
-        [SerializeField] Vector2 offScreenMax = Vector2.one;
+        [SerializeField] Vector2 offScreenMax = new (+1.05f, +1.05f);
         [Tooltip("Determines normalized screen position, calculated via Camera.WorldToScreenPoint(MarkerEntry.PivotPosition). " +
             "Keep it slightly below 0.0, to avoid widgets dissapearing at the edge of the screen.")]
-        [SerializeField] Vector2 offScreenMin = Vector2.zero;
+        [SerializeField] Vector2 offScreenMin = new (-0.05f, -0.05f);
 
-        [Tooltip("Determines offsets from screen edge (in RecTransform units), where compass-widgets are placed.")]
+        [Tooltip("Determines offsets from screen edge (in RecTransform units), where compass-mode widgets are placed.")]
         [SerializeField] RectOffset compassPadding;
+
+        protected abstract RectTransform DisplayTransform { get; }
 
         private Transform customCompassPivot;
         private Transform GetCompassPivot()
@@ -57,18 +51,18 @@ namespace NorskaLib.UI
 
         protected virtual void Start()
         {
-            widgets             = new (100);
-            sortDatas           = new (100);
+            widgets   = new (100);
+            sortDatas = new (100);
 
             Camera = ResolveCamera();
             CameraTransform = Camera.transform;
 
-            Entry.onInstanceUnregistred += OnEntryUnregistred;
+            MarkerEntry.onInstanceUnregistred += OnEntryUnregistred;
         }
 
         protected virtual void OnDestroy()
         {
-            Entry.onInstanceUnregistred -= OnEntryUnregistred;
+            MarkerEntry.onInstanceUnregistred -= OnEntryUnregistred;
         }
 
         protected virtual void LateUpdate()
@@ -78,30 +72,41 @@ namespace NorskaLib.UI
 
         #endregion
 
-        private Dictionary<Entry, Widget> widgets;
-        private List<SortData> sortDatas;
+        private Dictionary<E, MarkerWidget<E>> widgets;
+        private List<MarkerSortData<E>> sortDatas;
 
-        private void OnEntryUnregistred(Entry entry)
+        private void OnEntryUnregistred(MarkerEntry e)
         {
-            if (!widgets.TryGetValue(entry, out Widget widget) || widget == null)
+            if (e is not E entry)
+                return;
+
+            if (!widgets.TryGetValue(entry, out MarkerWidget<E> widget))
                 return;
 
             widgets.Remove(entry);
-            widget.Unbind();
-            RemoveWidgetInstance(widget);
+
+            if (widget != null)
+            {
+                widget.Unbind(entry);
+                RemoveWidgetInstance(widget);
+            }
         }
 
-        protected abstract Widget GetWidgetInstance(Entry entry);
+        protected abstract MarkerWidget<E> GetWidgetInstance(E entry);
 
-        protected abstract void RemoveWidgetInstance(Widget widget);
+        protected abstract void RemoveWidgetInstance(MarkerWidget<E> widget);
 
         private void UpdateWidgets()
         {
-            var screenRect = transform.rect;
+            var displayTransform = DisplayTransform;
+            var displayRect = DisplayTransform.rect;
             var compassPivot = GetCompassPivot();
 
-            foreach (var entry in Entry.Instances)
+            foreach (var e in MarkerEntry.Instances)
             {
+                if (e is not E entry)
+                    continue;
+
                 var mode = Camera.PointIsInsideViewport(entry.PivotPosition, offScreenMin, offScreenMax)
                     ? MarkerModes.World
                     : MarkerModes.Compass;
@@ -119,7 +124,7 @@ namespace NorskaLib.UI
                 else if (!show && widgetExists)
                 {
                     widgets.Remove(entry);
-                    widget.Unbind();
+                    widget.Unbind(entry);
                     RemoveWidgetInstance(widget);
 
                     continue;
@@ -127,6 +132,7 @@ namespace NorskaLib.UI
                 else if (show && !widgetExists)
                 {
                     widget = GetWidgetInstance(entry);
+                    widget.Transform.SetParent(displayTransform);
                     widget.Transform.anchorMin = Vector2.zero;
                     widget.Transform.anchorMax = Vector2.zero;
                     widget.Bind(entry);
@@ -136,32 +142,39 @@ namespace NorskaLib.UI
                 if (widget.lastMode != mode)
                     widget.SwitchMode(mode);
 
+                var angleToEntry = MathUtils.AbsoluteSignedAngleXZ(compassPivot.position, entry.PivotPosition);
+                if (widget is IAngleDisplayerWidget angleDisplayer)
+                    angleDisplayer.Display(angleToEntry);
+
+                var distance = Vector3.Distance(entry.PivotPosition, compassPivot.position);
+                if (widget is IDistanceDisplayerWidget distanceDisplayer)
+                    distanceDisplayer.Display(distance);
+
+                if (widget is IFacingDisplayerWidget facingDisplayer)
+                {
+                    var facinfAngle = MathUtils.AbsoluteSignedAngleXZ(entry.transform);
+                    facingDisplayer.Display(facinfAngle);
+                }
+
                 switch (mode)
                 {
                     case MarkerModes.World:
                         var widgetScreenPos = Camera.WorldToScreenPointNormalized(entry.WidgetPosition);
-                        widget.Transform.anchoredPosition = widgetScreenPos * screenRect.size;
+                        widget.Transform.anchoredPosition = widgetScreenPos * displayRect.size;
                         break;
 
                     case MarkerModes.Compass:
-                        var angle = MathUtils.AbsoluteSignedAngleXZ(compassPivot.position, entry.PivotPosition);
-                        if (widget is IAngleDisplayerWidget angleDisplayer)
-                            angleDisplayer.DisplayAngle(angle);
 
-                        var rectSize = screenRect.size - new Vector2(compassPadding.horizontal, compassPadding.vertical);
+                        var rectSize = displayRect.size - new Vector2(compassPadding.horizontal, compassPadding.vertical);
                         var rectCenter = new Vector2(compassPadding.left, compassPadding.top) + rectSize * 0.5f;
-                        widget.Transform.anchoredPosition = MathUtils.PositionOnRectangle(rectCenter, rectSize, angle);
+                        widget.Transform.anchoredPosition = MathUtils.PositionOnRectangle(rectCenter, rectSize, angleToEntry);
                         break;
                 }
 
-                var distance = Vector3.Distance(entry.PivotPosition, compassPivot.position);
-                if (widget is IDistanceDisplayerWidget distanceDisplayer)
-                    distanceDisplayer.DisplayDistance(distance);
-
-                sortDatas.Add(new SortData()
+                sortDatas.Add(new MarkerSortData<E>()
                 {
-                    widget = widget,
-                    distance = distance
+                    widget      = widget,
+                    distance    = distance
                 });
             }
 

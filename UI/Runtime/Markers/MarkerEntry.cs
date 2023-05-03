@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NorskaLib.UI
+namespace NorskaLib.UI.Markers
 {
     public abstract class MarkerEntry : MonoBehaviour
     {
@@ -105,6 +105,6 @@ namespace NorskaLib.UI
         /// <summary>
         /// NOTE: Points will be considered as in local object space (relative to MarkerEntry.PivotPosition).
         /// </summary>
-        public Vector3[] SamplePoints { get; }
+        public IEnumerable<Vector3> SamplePoints { get; }
     }
 }

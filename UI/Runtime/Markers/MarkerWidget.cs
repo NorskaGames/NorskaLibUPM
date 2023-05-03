@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NorskaLib.UI
+namespace NorskaLib.UI.Markers
 {
     [RequireComponent(typeof(RectTransform))]
-    public abstract class MarkerWidget : MonoBehaviour
+    public abstract class MarkerWidget<E> : MonoBehaviour where E : MarkerEntry
     {
         public RectTransform Transform { get; private set; }
-
-        public MarkerEntry Entry { get; private set; }
 
         /// <summary>
         /// Determines which widgets will be rendered on top of other (low values rendered above high).
@@ -35,49 +33,32 @@ namespace NorskaLib.UI
             lastMode = mode;
         }
 
-        public virtual void Bind(MarkerEntry entry)
-        {
-            Entry = entry;
-        }
+        public virtual void Bind(E entry) { }
 
-        public virtual void Unbind()
-        {
-
-        }
+        public virtual void Unbind(E entry) { }
     }
 
     public interface IDistanceDisplayerWidget
     {
-        public void DisplayDistance(float distance);
+        public void Display(float distance);
     }
 
     public interface IAngleDisplayerWidget
     {
         /// <summary>
-        /// Is called each update frame for markers, which entries is in compas mode (are off screen).
         /// Use it to implement custom compas-marker widget logic (for example, rotating an arrow towards quest target).
         /// </summary>
-        /// <param name="angle"> Signed angle in degrees from MarkerOverlay.camera.forward to direction
-        /// from MarkerOverlay.CompasPivot.position towards entry.WorldPosition. </param>
-        public void DisplayAngle(float angle);
+        /// <param name="angle"> Signed angle in degrees from 'MarkerOverlay.camera.forward' to direction
+        /// from 'MarkerOverlay.CompasPivot.position' towards 'MarkerEntry.WorldPosition'. </param>
+        public void Display(float angle);
     }
 
-    internal struct MarkerWidgetSortData : IEquatable<MarkerWidgetSortData>, IComparable<MarkerWidgetSortData>
+    public interface IFacingDisplayerWidget
     {
-        public MarkerWidget widget;
-        public float distance;
-
-        public int CompareTo(MarkerWidgetSortData other)
-        {
-            if (this.widget.SortingOrder < other.widget.SortingOrder)
-                return -1;
-
-            return this.distance.CompareTo(other.distance);
-        }
-
-        public bool Equals(MarkerWidgetSortData other)
-        {
-            return this.widget.Equals(other.widget);
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="facingAngle"> Absolute facing angle of a corresponding entry. </param>
+        public void Display(float facingAngle);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace NorskaLib.UI
+﻿namespace NorskaLib.UI.Markers
 {
     [System.Flags]
     public enum MarkerModes : byte
