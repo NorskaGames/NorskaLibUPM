@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace NorskaLib.UI.Markers
 {
-    public abstract class MarkersDisplay<E> : MonoBehaviour where E : MarkerEntry
+    public abstract class MarkersDisplay : MonoBehaviour
     {
         #region Dependencies
 
@@ -72,15 +72,17 @@ namespace NorskaLib.UI.Markers
 
         #endregion
 
-        private Dictionary<E, MarkerWidget<E>> widgets;
-        private List<MarkerSortData<E>> sortDatas;
+        private Dictionary<MarkerEntry, MarkerWidget> widgets;
+        private List<MarkerSortData> sortDatas;
 
-        private void OnEntryUnregistred(MarkerEntry e)
+        /// <summary>
+        /// Override it to seprate entries among different Displays.
+        /// </summary>
+        protected virtual bool EntryIsValid(MarkerEntry entry) => true;
+
+        private void OnEntryUnregistred(MarkerEntry entry)
         {
-            if (e is not E entry)
-                return;
-
-            if (!widgets.TryGetValue(entry, out MarkerWidget<E> widget))
+            if (!EntryIsValid(entry) || !widgets.TryGetValue(entry, out MarkerWidget widget))
                 return;
 
             widgets.Remove(entry);
@@ -92,9 +94,9 @@ namespace NorskaLib.UI.Markers
             }
         }
 
-        protected abstract MarkerWidget<E> GetWidgetInstance(E entry);
+        protected abstract MarkerWidget GetWidgetInstance(MarkerEntry entry);
 
-        protected abstract void RemoveWidgetInstance(MarkerWidget<E> widget);
+        protected abstract void RemoveWidgetInstance(MarkerWidget widget);
 
         private void UpdateWidgets()
         {
@@ -102,9 +104,9 @@ namespace NorskaLib.UI.Markers
             var displayRect = DisplayTransform.rect;
             var compassPivot = GetCompassPivot();
 
-            foreach (var e in MarkerEntry.Instances)
+            foreach (var entry in MarkerEntry.Instances)
             {
-                if (e is not E entry)
+                if (!EntryIsValid(entry))
                     continue;
 
                 var mode = Camera.PointIsInsideViewport(entry.PivotPosition, offScreenMin, offScreenMax)
@@ -171,7 +173,7 @@ namespace NorskaLib.UI.Markers
                         break;
                 }
 
-                sortDatas.Add(new MarkerSortData<E>()
+                sortDatas.Add(new MarkerSortData()
                 {
                     widget      = widget,
                     distance    = distance

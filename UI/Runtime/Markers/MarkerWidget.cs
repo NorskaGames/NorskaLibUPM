@@ -6,7 +6,7 @@ using UnityEngine;
 namespace NorskaLib.UI.Markers
 {
     [RequireComponent(typeof(RectTransform))]
-    public abstract class MarkerWidget<E> : MonoBehaviour where E : MarkerEntry
+    public abstract class MarkerWidget: MonoBehaviour
     {
         public RectTransform Transform { get; private set; }
 
@@ -33,9 +33,9 @@ namespace NorskaLib.UI.Markers
             lastMode = mode;
         }
 
-        public virtual void Bind(E entry) { }
+        public virtual void Bind(MarkerEntry entry) { }
 
-        public virtual void Unbind(E entry) { }
+        public virtual void Unbind(MarkerEntry entry) { }
     }
 
     public interface IDistanceDisplayerWidget

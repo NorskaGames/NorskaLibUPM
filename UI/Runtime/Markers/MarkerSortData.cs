@@ -2,12 +2,12 @@
 
 namespace NorskaLib.UI.Markers
 {
-    internal struct MarkerSortData<E> : IEquatable<MarkerSortData<E>>, IComparable<MarkerSortData<E>> where E : MarkerEntry
+    internal struct MarkerSortData : IEquatable<MarkerSortData>, IComparable<MarkerSortData>
     {
-        public MarkerWidget<E> widget;
+        public MarkerWidget widget;
         public float distance;
 
-        public int CompareTo(MarkerSortData<E> other)
+        public int CompareTo(MarkerSortData other)
         {
             var layerCmp = this.widget.SortingOrder.CompareTo(other.widget.SortingOrder);
 
@@ -16,7 +16,7 @@ namespace NorskaLib.UI.Markers
                 : this.distance.CompareTo(other.distance);
         }
 
-        public bool Equals(MarkerSortData<E> other)
+        public bool Equals(MarkerSortData other)
         {
             return this.widget.Equals(other.widget);
         }
