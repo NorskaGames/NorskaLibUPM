@@ -1,5 +1,5 @@
 # NorskaLib Pools
-Switch language: [RUS](https://github.com/NorskaGames/NorskaLibUPM/blob/master/Tools/README.ru.md) | **ENG**
+Switch language: [RUS](https://github.com/NorskaGames/NorskaLibUPM/blob/master/Pools/README.ru.md) | **ENG**
 
 Contains simple MonoBehaviour pools implementation.
 
