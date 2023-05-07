@@ -7,13 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Documentation and examples
 
-## [0.1.0] - 2023-05-13
-### Added
-- Basic functionality
-
-## [0.1.1] - 2023-05-23
+## [0.1.1] - 03-05-2023
 ### Refactored
 - Markers API and structure
 ### Fixed
 - Markers sorting
 - This document
+
+## [0.1.0] - 20-04-2023
+### Added
+- Basic functionality
