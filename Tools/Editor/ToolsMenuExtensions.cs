@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace NorskaLib.Tools
 {
-    public struct EditorTools
+    public struct MenuBarExtensions
     {
         [MenuItem("Tools/Clear Player Preferences")]
         public static void ClearPlayerPrefs()

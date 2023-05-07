@@ -1,7 +1,9 @@
 {
     "name": "NorskaLib.Tools.Editor",
     "rootNamespace": "NorskaLib",
-    "references": [],
+    "references": [
+        "NorskaLib.Core"
+    ],
     "includePlatforms": [
         "Editor"
     ],
