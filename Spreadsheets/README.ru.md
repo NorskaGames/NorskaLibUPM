@@ -1,5 +1,6 @@
-﻿# NorskaLib Spreadsheets
-Выбор языка: **RUS** | ENG
+# NorskaLib Spreadsheets
+Выбор языка: **RUS** | [ENG](https://github.com/NorskaGames/NorskaLibUPM/blob/master/Spreadsheets/README.md)
+
 Инструмент для редактора Unity, призванный помочь в дизайне и импорте базы данных игры (настроек персонажей, оружия, предметов и т. п.) из таблиц Google.
 
 # Руководство
@@ -8,8 +9,6 @@
 ```
 https://github.com/NorskaGames/NorskaLibUPM.git?path=/Spreadsheets
 ```
-![package-manager-setup](https://drive.google.com/uc?id=16GE1j46xtedQu88d6cfM2G4itvqxpU2f)
-
 ## Настройка таблицы
 
 Создайте таблицу и убедитесь, что она доступна по ссылке:
@@ -43,5 +42,5 @@ public class ExampleData
 ```
 _**Важно!** Убедитесь, что имена переменных совпадают с именами столбцов в таблице._
 
-Теперь вы можете создать ассет-контейнер и импортировать в него таблицу как показано на примере ниже:
+Теперь вы можете создать SpreadsheetContainer.asset и импортировать в него таблицу как показано на примере ниже:
 ![container-inspector](https://drive.google.com/uc?id=16Rg4NIyj5c8-Qjq5phW0konDMRMKNN21)
