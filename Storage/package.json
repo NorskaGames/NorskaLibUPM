@@ -1,0 +1,17 @@
+{
+  "name": "com.norska-lib.storage",
+  "version": "0.1.0",
+  "displayName": "NorskaLib Storage",
+  "description": "Toolset serializing and writing persistent user data to drive.",
+  "unity": "2019.1",
+  "keywords": [
+    "save",
+    "serialization",
+    "tool"
+  ],
+  "author": {
+    "name": "Norska Games",
+    "email": "norskagames@gmail.com"
+  },
+  "type": "tool"
+}

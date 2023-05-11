@@ -1,0 +1,19 @@
+{
+    "name": "NorskaLib.Storage.Editor",
+    "rootNamespace": "NorskaLib",
+    "references": [
+        "NorskaLib.Storage",
+        "NorskaLib.DI"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

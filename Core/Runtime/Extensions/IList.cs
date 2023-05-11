@@ -13,19 +13,6 @@ namespace NorskaLib.Extensions
             return index >= 0 && index <= list.Count - 1;
         }
 
-        public static bool TryGet<T>(this IList<T> list, Func<T, bool> predicate, out T item)
-        {
-            foreach (var i in list)
-                if (predicate(i))
-                {
-                    item = i;
-                    return true;
-                }
-
-            item = default;
-            return false;
-        }
-
         public static List<int> GetIndexesList(this IList list)
         {
             return MathUtils.GetRangeList(0, list.Count - 1);

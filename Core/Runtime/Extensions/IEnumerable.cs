@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NorskaLib.Extensions
 {
@@ -11,6 +12,19 @@ namespace NorskaLib.Extensions
                 queue.Enqueue(item);
 
             return queue;
+        }
+
+        public static bool TryGet<T>(this IEnumerable<T> collection, Func<T, bool> predicate, out T item)
+        {
+            foreach (var i in collection)
+                if (predicate(i))
+                {
+                    item = i;
+                    return true;
+                }
+
+            item = default;
+            return false;
         }
     }
 }

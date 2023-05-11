@@ -1,0 +1,16 @@
+{
+  "name": "com.norska-lib.localization",
+  "version": "0.1.0",
+  "displayName": "NorskaLib Localization",
+  "description": "Toolset for localizing TextMeshPro texts.",
+  "unity": "2019.1",
+  "keywords": [
+    "localization",
+    "tool"
+  ],
+  "author": {
+    "name": "Norska Games",
+    "email": "norskagames@gmail.com"
+  },
+  "type": "tool"
+}

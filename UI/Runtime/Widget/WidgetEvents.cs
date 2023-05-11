@@ -56,8 +56,12 @@ namespace NorskaLib.UI.Widgets
             }
         }
 
+
         void OnDisable()
         {
+            isDragged = false;
+            pointerIsInside = false;
+            pointerIsDown = false;
             doubleClickTimer = 0;
             clickCount = 0;
         }
@@ -66,9 +70,14 @@ namespace NorskaLib.UI.Widgets
 
         #region Callbacks
 
+        [ShowInInspector, DisableIf("@true")]
+        private bool isDragged;
+        public bool IsDragged => isDragged;
+
         public event Action<PointerEventData> onBeginDrag;
         public void OnBeginDrag(PointerEventData eventData)
         {
+            isDragged = true;
             onBeginDrag?.Invoke(eventData);
         }
 
@@ -81,8 +90,13 @@ namespace NorskaLib.UI.Widgets
         public event Action<PointerEventData> onEndDrag;
         public void OnEndDrag(PointerEventData eventData)
         {
+            isDragged = false;
             onEndDrag?.Invoke(eventData);
         }
+
+        [ShowInInspector, DisableIf("@true")]
+        private bool pointerIsDown;
+        public bool PointerIsDown => pointerIsDown;
 
         public event Action<PointerEventData> onClick;
         public event Action<PointerEventData> onDoubleClick;
@@ -97,24 +111,32 @@ namespace NorskaLib.UI.Widgets
         public event Action<PointerEventData> onPointerDown;
         public void OnPointerDown(PointerEventData eventData)
         {
+            pointerIsDown = true;
             onPointerDown?.Invoke(eventData);
         }
 
         public event Action<PointerEventData> onPointerUp;
         public void OnPointerUp(PointerEventData eventData)
         {
+            pointerIsDown = false;
             onPointerUp?.Invoke(eventData);
         }
+
+        [ShowInInspector, DisableIf("@true")]
+        private bool pointerIsInside;
+        public bool PointerIsInside => pointerIsInside;
 
         public event Action<PointerEventData> onPointerEnter;
         public void OnPointerEnter(PointerEventData eventData)
         {
+            pointerIsInside = true;
             onPointerEnter?.Invoke(eventData);
         }
 
         public event Action<PointerEventData> onPointerExit;
         public void OnPointerExit(PointerEventData eventData)
         {
+            pointerIsInside = false;
             onPointerExit?.Invoke(eventData);
         }
 

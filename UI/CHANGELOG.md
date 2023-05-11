@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Documentation and examples
 
+## [0.1.2] - 11-05-2023
+### Refactored
+- Bar hierarchy
+- WindowsManager internal logic
+### Removed
+- Deprecated scripts
+
 ## [0.1.1] - 03-05-2023
 ### Refactored
 - Markers API and structure

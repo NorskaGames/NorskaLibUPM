@@ -1,3 +1,4 @@
+using NorskaLib.Extensions;
 using NorskaLib.Utilities;
 using System;
 using System.Collections;
@@ -47,11 +48,12 @@ namespace NorskaLib.Tools
             string name, 
             TypeKey typeKey, 
             AccessKey accessKey = AccessKey.Public,
-            ModifierKeys modifierKeys = ModifierKeys.NONE)
+            ModifierKeys modifierKeys = ModifierKeys.NONE,
+            bool partial = false)
         {
             var type = ToString(typeKey);
             var builder = new StringBuilder();
-            AppendKeys(builder, accessKey, modifierKeys);
+            AppendKeys(builder, accessKey, modifierKeys, partial);
             builder.Append($" {type} {name}");
             AddLine(builder.ToString());
             AddLine("{");
@@ -62,11 +64,12 @@ namespace NorskaLib.Tools
             string baseName, 
             TypeKey typeKey, 
             AccessKey accessKey = AccessKey.Public,
-            ModifierKeys modifierKeys = ModifierKeys.NONE)
+            ModifierKeys modifierKeys = ModifierKeys.NONE,
+            bool partial = false)
         {
             var type = ToString(typeKey);
             var builder = new StringBuilder();
-            AppendKeys(builder, accessKey, modifierKeys);
+            AppendKeys(builder, accessKey, modifierKeys, partial);
             builder.Append($" {type} {name} : {baseName}");
             AddLine(builder.ToString());
             AddLine("{");
@@ -83,9 +86,14 @@ namespace NorskaLib.Tools
             AddLine("};");
         }
 
-        private void AppendKeys(StringBuilder builder, AccessKey accessKey, ModifierKeys modifierKeys)
+        private void AppendKeys(StringBuilder builder, AccessKey accessKey, ModifierKeys modifierKeys, bool partial = false)
         {
             builder.Append(ToString(accessKey));
+
+            if (partial)
+            {
+                builder.Append(" partial");
+            }
 
             if (EnumUtils.HasFlag((int)modifierKeys, (int)ModifierKeys.Static))
             {
@@ -189,6 +197,15 @@ namespace NorskaLib.Tools
         public void EndNamespace()
             => EndBody();
 
+        public void BeginRegion(string name)
+        {
+            AddLine("#region " + name);
+        }
+        public void EndRegion()
+        {
+            AddLine("#endregion");
+        }
+
         public void BeginEnum(string name, AccessKey accessKey = AccessKey.Public)
             => BeginType(name, TypeKey.Enum, accessKey);
         public void PopulateEnum(string elementName)
@@ -206,17 +223,17 @@ namespace NorskaLib.Tools
         public void EndEnum()
             => EndBody();
 
-        public void BeginStruct(string name, AccessKey accessKey = AccessKey.Public)
-            => BeginType(name, TypeKey.Struct, accessKey);
-        public void BeginStruct(string name, string baseName, AccessKey accessKey = AccessKey.Public)
-            => BeginType(name, baseName, TypeKey.Struct, accessKey);
+        public void BeginStruct(string name, AccessKey accessKey = AccessKey.Public, bool partial = false)
+            => BeginType(name, TypeKey.Struct, accessKey, partial: partial);
+        public void BeginStruct(string name, string baseName, AccessKey accessKey = AccessKey.Public, bool partial = false)
+            => BeginType(name, baseName, TypeKey.Struct, accessKey, partial: partial);
         public void EndStruct()
             => EndBody();
 
-        public void BeginClass(string name, AccessKey accessKey = AccessKey.Public)
-            => BeginType(name, TypeKey.Class, accessKey);
-        public void BeginClass(string name, string baseName, AccessKey accessKey = AccessKey.Public)
-            => BeginType(name, baseName, TypeKey.Class, accessKey);
+        public void BeginClass(string name, AccessKey accessKey = AccessKey.Public, bool partial = false)
+            => BeginType(name, TypeKey.Class, accessKey, partial: partial);
+        public void BeginClass(string name, string baseName, AccessKey accessKey = AccessKey.Public, bool partial = false)
+            => BeginType(name, baseName, TypeKey.Class, accessKey, partial: partial);
         public void EndClass()
             => EndBody();
 
@@ -232,17 +249,26 @@ namespace NorskaLib.Tools
         public void EndArray()
             => EndCollection();
 
-        public void BeginDictionary(string keyTypeName, string valueTypeName)
+        public void BeginDictionary(string keyTypeName, string valueTypeName, AccessKey accessKey = AccessKey.Private, ModifierKeys modifierKeys = ModifierKeys.NONE)
         {
-
+            var builder = new StringBuilder();
+            AppendKeys(builder, accessKey, modifierKeys);
+            builder.Append($" Dictionary<{keyTypeName},{valueTypeName}> = new Dictionary<{keyTypeName},{valueTypeName}>");
+            AddLine(builder.ToString());
+            AddLine("{");
+            tabulation++;
         }
         public void PopulateDictionary(string key, string value)
         {
-
+            AddLine($"{{{key}, {value}}}");
         }
         public void EndDictionary()
             => EndCollection();
 
+        public void AddReturn()
+        {
+            AddLine($"return;");
+        }
         public void AddReturn(string expression)
         {
             AddLine($"return {expression};");
@@ -318,6 +344,27 @@ namespace NorskaLib.Tools
             AddLine("{");
             tabulation++;
         }
+        public void BeginMethod(string name, string returnType, IEnumerable<KeyValuePair<string, string>> parameters, AccessKey accessKey = AccessKey.Public, ModifierKeys modifierKeys = ModifierKeys.NONE)
+        {
+            var builder = new StringBuilder();
+            AppendKeys(builder, accessKey, modifierKeys);
+            builder.Append($" {returnType} {name}(");
+            var firstParam = true;
+            foreach (var pair in parameters)
+            {
+                if (!firstParam)
+                    builder.Append(", ");
+
+                builder.Append(pair.Key);
+                builder.Append(' ');
+                builder.Append(pair.Value);
+                firstParam = false;
+            }
+            builder.Append($")");
+            AddLine(builder.ToString());
+            AddLine("{");
+            tabulation++;
+        }
         public void EndMethod()
             => EndBody();
 
@@ -325,6 +372,11 @@ namespace NorskaLib.Tools
         {
             AddLine($"switch ({variableName})");
             AddLine("{");
+            tabulation++;
+        }
+        public void BeginCase(string value)
+        {
+            AddLine($"case {value}:");
             tabulation++;
         }
         public void BeginCase(string enumTypeName, string enumValueName)
