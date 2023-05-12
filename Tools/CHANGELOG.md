@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Boolean and float parsing settings customization
 - Yandex documents support
 
-## [0.1.1] - 11-05-2023
+## [0.1.2] - 12-05-2023
 ### Updated
 - CodeFileContent API
+### Added
+- FloatValueController
 
 ## [0.1.1] - 06-05-2023
 ### Updated
