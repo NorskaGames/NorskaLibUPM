@@ -7,11 +7,18 @@ namespace NorskaLib.Tools
 {
     public abstract class ContainerScriptableObject<T> : ScriptableObject, IEnumerable<T> where T : class
     {
+        private const string ModificationExceptionText = "ContainerScriptableObject<> internal collection is immutable by design!";
+
         [SerializeField] protected T[] collection;
 
         #region IEnumerable
 
-        public T this[int index] => collection[index];
+        public T this[int index]
+        {
+            get => collection[index];
+
+            set => throw new System.NotSupportedException(ModificationExceptionText);
+        }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -24,6 +31,26 @@ namespace NorskaLib.Tools
         }
 
         #endregion
+
+        public int Count => collection.Length;
+
+        public int IndexOf(T item)
+        {
+            for (int i = 0; i < collection.Length; i++)
+                if (item == collection[i])
+                    return i;
+
+            return -1;
+        }
+
+        public bool Contains(T item)
+        {
+            for (int i = 0; i < collection.Length; i++)
+                if (item == collection[i])
+                    return true;
+
+            return false;
+        }
 
         public virtual T GetDefault() => default;
 

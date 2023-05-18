@@ -21,9 +21,8 @@ namespace NorskaLib.Utilities
                 if (this.value == value)
                     return;
 
-                var oldValue = this.value;
                 this.value = value;
-                if (oldValue != null || value == null)
+                if (value == null && IsAssigned)
                 {
                     IsAssigned = false;
                     onUnassigned?.Invoke();
@@ -63,7 +62,7 @@ namespace NorskaLib.Utilities
         }
     }
 
-    public class ReactiveValue<V>
+    public class ReactiveValue<V> where V : struct
     {
         private V value;
 
