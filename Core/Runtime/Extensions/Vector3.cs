@@ -10,6 +10,16 @@ namespace NorskaLib.Extensions
             return vector.x.ApproximatelyZero() && vector.y.ApproximatelyZero() && vector.z.ApproximatelyZero();
         }
 
+        public static float Min(this Vector3 vector)
+        {
+            return MathUtils.Min(vector.x, vector.y, vector.z);
+        }
+
+        public static float Max(this Vector3 vector)
+        {
+            return MathUtils.Max(vector.x, vector.y, vector.z);
+        }
+
         public static Vector3 WithX(this Vector3 vector, float x)
         {
             return new Vector3(x, vector.y, vector.z);

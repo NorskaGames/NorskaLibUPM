@@ -15,6 +15,16 @@ namespace NorskaLib.Extensions
             return a * b;
         }
 
+        public static float Min(this Vector2 vector)
+        {
+            return Mathf.Min(vector.x, vector.y);
+        }
+
+        public static float Max(this Vector2 vector)
+        {
+            return Mathf.Max(vector.x, vector.y);
+        }
+
         public static Vector2 WithX(this Vector2 vector, float x)
         {
             return new Vector2(x, vector.y);

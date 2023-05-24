@@ -1,6 +1,6 @@
 {
   "name": "com.norska-lib.core",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "displayName": "NorskaLib Core",
   "description": "Extensions and syntax sugar for basic C# and Unity types.",
   "unity": "2019.1",

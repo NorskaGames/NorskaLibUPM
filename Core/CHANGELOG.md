@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Boolean and float parsing settings customization
 - Yandex documents support
 
+## [0.1.3] - 24-05-2023
+### Added
+- Added new extensions abd utilities
+
 ## [0.1.2] - 18-05-2023
 ### Added
 - Fixed ReactiveReference callback logic

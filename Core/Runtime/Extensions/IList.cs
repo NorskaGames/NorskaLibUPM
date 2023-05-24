@@ -61,6 +61,15 @@ namespace NorskaLib.Extensions
             return list[index];
         }
 
+        public static int IndexOf<T>(this List<T> list, Func<T, bool> predicate)
+        {
+            for (int i = 0; i < list.Count; i++)
+                if (predicate(list[i]))
+                    return i;
+
+            return -1;
+        }
+
         /// <returns> TRUE - if result is still inside collection range. </returns>
         /// <exception cref="ArgumentOutOfRangeException"> Given 'index' was out of collection range. </exception>
         public static bool TryGetNextIndex<T>(this IList<T> list, int index, bool loop, out int nextIndex)

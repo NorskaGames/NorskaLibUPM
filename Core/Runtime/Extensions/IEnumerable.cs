@@ -3,6 +3,16 @@ using System.Collections.Generic;
 
 namespace NorskaLib.Extensions
 {
+    public interface IStringIdentifiedItem
+    {
+        string Id { get; }
+    }
+
+    public interface IIntegerIdentifiedItem
+    {
+        int Id { get; }
+    }
+
     public static class IEnumerableExtensions
     {
         public static Queue<T> ToQueue<T>(this IEnumerable<T> collection)
@@ -14,16 +24,42 @@ namespace NorskaLib.Extensions
             return queue;
         }
 
-        public static bool TryGet<T>(this IEnumerable<T> collection, Func<T, bool> predicate, out T item)
+        public static bool TryGet<T>(this IEnumerable<T> collection, Func<T, bool> predicate, out T result)
         {
-            foreach (var i in collection)
-                if (predicate(i))
+            foreach (var item in collection)
+                if (predicate(item))
                 {
-                    item = i;
+                    result = item;
                     return true;
                 }
 
-            item = default;
+            result = default;
+            return false;
+        }
+
+        public static bool TryGet<T>(this IEnumerable<T> collection, string id, out T result) where T : IStringIdentifiedItem
+        {
+            foreach (var item in collection)
+                if (item.Id == id)
+                {
+                    result = item;
+                    return true;
+                }
+
+            result = default;
+            return false;
+        }
+
+        public static bool TryGet<T>(this IEnumerable<T> collection, int id, out T result) where T : IIntegerIdentifiedItem
+        {
+            foreach (var item in collection)
+                if (item.Id == id)
+                {
+                    result = item;
+                    return true;
+                }
+
+            result = default;
             return false;
         }
     }
