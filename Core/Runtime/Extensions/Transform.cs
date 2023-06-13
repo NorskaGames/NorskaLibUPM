@@ -22,5 +22,15 @@ namespace NorskaLib.Extensions
         {
             instance.localScale = new Vector3(scale, scale, scale);
         }
+
+        public static void SetPositionAndRotation(this Transform transform, Transform other)
+        {
+            transform.SetPositionAndRotation(other.transform.position, other.transform.rotation);
+        }
+
+        public static void SetLocalPositionAndRotation(this Transform transform, Transform other)
+        {
+            transform.SetLocalPositionAndRotation(other.transform.position, other.transform.rotation);
+        }
     }
 }

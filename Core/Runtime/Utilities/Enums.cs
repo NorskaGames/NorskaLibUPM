@@ -18,25 +18,61 @@ namespace NorskaLib.Utilities
         /// <summary>
         /// Is fast and non-alocating alernative to native Enum.HasFlag(Enum).
         /// </summary>
-        public static bool HasFlag(int mask, int layer)
+        public static bool HasFlag(int mask, int flagIndex)
         {
-            return (mask & layer) != 0;
+            return mask == (mask | (1 << flagIndex));
         }
 
         /// <summary>
         /// Is fast and non-alocating alernative to native Enum.HasFlag(Enum).
         /// </summary>
-        public static bool HasFlag(byte mask, byte layer)
+        public static bool HasFlag(byte mask, byte flagIndex)
         {
-            return (mask & layer) != 0;
+            return mask == (mask | (1 << flagIndex));
         }
 
         /// <summary>
         /// Is fast and non-alocating alernative to native Enum.HasFlag(Enum).
         /// </summary>
-        public static bool HasFlag(LayerMask mask, int layer)
+        public static bool HasFlag(LayerMask mask, int layerIndex)
         {
-            return mask == (mask | (1 << layer));
+            return mask == (mask | (1 << layerIndex));
+        }
+
+        public static bool Intersects(byte maskA, byte maskB)
+        {
+            return (maskA & maskB) != 0;
+        }
+
+        public static bool Intersects(int maskA, int maskB)
+        {
+            return (maskA & maskB) != 0;
+        }
+
+        public static void ForEachSetFlag(int mask, Action<int> action)
+        {
+            for (int i = 0; i < 32; i++)
+                if (HasFlag(mask, i))
+                    action(i);
+        }
+        public static void ForEachClearFlag(int mask, Action<int> action)
+        {
+            for (int i = 0; i < 32; i++)
+                if (!HasFlag(mask, i))
+                    action(i);
+        }
+
+        public static void ForEachSetFlag(byte mask, Action<byte> action)
+        {
+            for (byte i = 0; i < 8; i++)
+                if (HasFlag(mask, i))
+                    action(i);
+        }
+        public static void ForEachClearFlag(byte mask, Action<byte> action)
+        {
+            for (byte i = 0; i < 8; i++)
+                if (!HasFlag(mask, i))
+                    action(i);
         }
     }
 }

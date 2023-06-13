@@ -29,9 +29,17 @@ namespace NorskaLib.Extensions
         {
             return new Vector2(x, vector.y);
         }
+        public static Vector2 WithInvertedX(this Vector2 vector)
+        {
+            return new Vector2(-vector.x, vector.y);
+        }
         public static Vector2 WithY(this Vector2 vector, float y)
         {
             return new Vector2(vector.x, y);
+        }
+        public static Vector2 WithInvertedY(this Vector2 vector)
+        {
+            return new Vector2(vector.x, -vector.y);
         }
 
         /// <summary>
@@ -51,6 +59,16 @@ namespace NorskaLib.Extensions
         public static Vector2 Snap(this Vector2 position, float cellSizeUnitform = 1)
         {
             return Snap(position, Vector2Utils.Uniform(cellSizeUnitform));
+        }
+
+        public static Vector2 InvertAxes(this Vector2 vector)
+        {
+            return -1 * vector;
+        }
+
+        public static Vector2 SwapAxes(this Vector2 vector)
+        {
+            return new Vector2(vector.y, vector.x);
         }
     }
 }

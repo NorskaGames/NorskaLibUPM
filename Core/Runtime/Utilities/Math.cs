@@ -462,23 +462,6 @@ namespace NorskaLib.Utilities
             return -Vector2.SignedAngle(Vector2.up, transform.forward.ToXZ());
         }
 
-        /// <summary>
-        /// Returns a Vector3 in XZ plane, pointing towards given angle. 0 degrees considered Vector3.forward (0, 0, 1).
-        /// </summary>
-        /// <param name="degrees"></param>
-        /// <returns></returns>
-        public static Vector3 AngleToVector3XZ(float degrees, float radius = 1)
-        {
-            return PositionOnCircle3D(Vector3.zero, degrees, radius);
-        }
-        /// <summary>
-        /// Returns a Vector2, pointing towards given angle. 0 degrees considered Vector2.up (0, 1).
-        /// </summary>
-        public static Vector2 AngleToVector2(float degrees, float radius = 1)
-        {
-            return PositionOnCircle2D(Vector2.zero, degrees, radius);
-        }
-
         public static bool SectorCircleCollision(Vector2 sectorOrigin, float sectorRadius, float sectorFacing, float sectorSpan, Vector2 circleOrigin, float circleRadius,
             out int samplePointsCount, out Vector2 samplePoint0, out Vector2 samplePoint1, out Vector2 samplePoint2)
         {

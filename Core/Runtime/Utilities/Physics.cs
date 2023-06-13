@@ -62,7 +62,7 @@ namespace NorskaLib.Utilities
             for (int i = 0; i < spheresCount; i++)
             {
                 var angle = i * angularDelta;
-                var direction = MathUtils.AngleToVector3XZ(angle);
+                var direction = MathUtils.PositionOnCircle3D(angle);
                 var hitsCount = Physics.SphereCastNonAlloc(origin, sphereRadius, direction, hitsBuffer, castRadius, castMask);
                 if (inverse && hitsCount > 0 || !inverse && hitsCount <= 0)
                     continue;

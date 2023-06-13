@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Documentation and examples
-- Proper import toggle caching
-- Boolean and float parsing settings customization
-- Yandex documents support
+
+## [0.1.1] - 12-06-2023
+### Added
+- Fixed pool runtime instantiation access and functionality.
 
 ## [0.1.0] - 20-04-2023
 ### Added

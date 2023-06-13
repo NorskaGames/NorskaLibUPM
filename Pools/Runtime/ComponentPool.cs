@@ -7,12 +7,28 @@ namespace NorskaLib.Pools
 {
     public abstract class GenericComponentPool<C> : ComponentPool<C> where C : Component
     {
-        [SerializeField] C prefab;
+        public C prefab;
 
         protected override C Instantiate()
         {
             return Instantiate(prefab);
         }
+
+        #region Editor
+#if UNITY_EDITOR
+
+        [SerializeField] bool logWarning = false;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            if (logWarning && prewarmedInstances.Length > capacity)
+                Debug.Log($"Prewarmed instances count in {this.name} ({this.GetType().Name}) is bigger than the pool's capacity. Some of these instances will never be used.");
+        }
+
+#endif
+        #endregion
     }
 
     public abstract class ComponentPool<C> : MonoBehaviour where C : Component
@@ -31,7 +47,7 @@ namespace NorskaLib.Pools
         public bool disablePooled = true;
 
         [Tooltip("Instances that must be loaded with scene and moved into the pool.")]
-        [SerializeField] C[] prewarmedInstances;
+        [SerializeField] protected C[] prewarmedInstances;
 
         private Stack<C> stack;
 
@@ -98,18 +114,16 @@ namespace NorskaLib.Pools
 
         protected virtual void Awake()
         {
-            if (stack is null)
-                stack = new Stack<C>(capacity);
+            stack ??= new Stack<C>(capacity);
 
-            var prewarmedTake = prewarmedInstances.Take(capacity);
+            if (prewarmedInstances == null || prewarmedInstances.Length == 0)
+                return;
 
             if (disablePooled)
                 foreach (var instance in prewarmedInstances)
                     instance.gameObject.SetActive(false);
 
-            if (prewarmedInstances.Length > capacity)
-                Debug.Log($"Prewarmed instances count in {this.name} ({this.GetType().Name}) is bigger than the pool's capacity. Some of these instances will never be used.");
-
+            var prewarmedTake = prewarmedInstances.Take(capacity);
             foreach (var instance in prewarmedTake)
                 stack.Push(instance);
         }
