@@ -55,9 +55,7 @@ namespace NorskaLib.Tools
             var builder = new StringBuilder();
             AppendKeys(builder, accessKey, modifierKeys, partial);
             builder.Append($" {type} {name}");
-            AddLine(builder.ToString());
-            AddLine("{");
-            tabulation++;
+            BeginBody(builder.ToString());
         }
         private void BeginType(
             string name, 
@@ -71,11 +69,16 @@ namespace NorskaLib.Tools
             var builder = new StringBuilder();
             AppendKeys(builder, accessKey, modifierKeys, partial);
             builder.Append($" {type} {name} : {baseName}");
-            AddLine(builder.ToString());
+            BeginBody(builder.ToString());
+        }
+
+        public void BeginBody(string expression)
+        {
+            AddLine(expression);
             AddLine("{");
             tabulation++;
         }
-        private void EndBody()
+        public void EndBody()
         {
             tabulation--;
             AddLine("}");
@@ -189,11 +192,7 @@ namespace NorskaLib.Tools
         }
 
         public void BeginNamespace(string name)
-        {
-            AddLine("namespace " + name);
-            AddLine("{");
-            tabulation++;
-        }
+            => BeginBody("namespace " + name);
         public void EndNamespace()
             => EndBody();
 
@@ -242,9 +241,7 @@ namespace NorskaLib.Tools
             var builder = new StringBuilder();
             AppendKeys(builder, accessKey, modifierKeys);
             builder.Append($" {typeName}[] {arrayName} = new {typeName}[]");
-            AddLine(builder.ToString());
-            AddLine("{");
-            tabulation++;
+            BeginBody(builder.ToString());
         }
         public void EndArray()
             => EndCollection();
@@ -254,9 +251,7 @@ namespace NorskaLib.Tools
             var builder = new StringBuilder();
             AppendKeys(builder, accessKey, modifierKeys);
             builder.Append($" Dictionary<{keyTypeName},{valueTypeName}> = new Dictionary<{keyTypeName},{valueTypeName}>");
-            AddLine(builder.ToString());
-            AddLine("{");
-            tabulation++;
+            BeginBody(builder.ToString());
         }
         public void PopulateDictionary(string key, string value)
         {
@@ -303,24 +298,15 @@ namespace NorskaLib.Tools
             var builder = new StringBuilder();
             AppendKeys(builder, accessKey, modifierKeys);
             builder.Append($" {type} {name}");
-            AddLine(builder.ToString());
-            AddLine("{");
-            tabulation++;
+            BeginBody(builder.ToString());
         }
         public void BeginGet()
-        {
-            AddLine("get");
-            AddLine("{");
-            tabulation++;
-        }
+            => BeginBody("get");
         public void EndGet()
             => EndBody();
         public void BeginSet()
-        {
-            AddLine("set");
-            AddLine("{");
-            tabulation++;
-        }
+            => BeginBody("set");
+
         public void EndSet()
             => EndBody();
         public void EndProperty()
@@ -331,18 +317,14 @@ namespace NorskaLib.Tools
             var builder = new StringBuilder();
             AppendKeys(builder, accessKey, modifierKeys);
             builder.Append($" {returnType} {name}()");
-            AddLine(builder.ToString());
-            AddLine("{");
-            tabulation++;
+            BeginBody(builder.ToString());
         }
         public void BeginMethod(string name, string returnType, string paramType, string paramName, AccessKey accessKey = AccessKey.Public, ModifierKeys modifierKeys = ModifierKeys.NONE)
         {
             var builder = new StringBuilder();
             AppendKeys(builder, accessKey, modifierKeys);
             builder.Append($" {returnType} {name}({paramType} {paramName})");
-            AddLine(builder.ToString());
-            AddLine("{");
-            tabulation++;
+            BeginBody(builder.ToString());
         }
         public void BeginMethod(string name, string returnType, IEnumerable<KeyValuePair<string, string>> parameters, AccessKey accessKey = AccessKey.Public, ModifierKeys modifierKeys = ModifierKeys.NONE)
         {
@@ -361,19 +343,13 @@ namespace NorskaLib.Tools
                 firstParam = false;
             }
             builder.Append($")");
-            AddLine(builder.ToString());
-            AddLine("{");
-            tabulation++;
+            BeginBody(builder.ToString());
         }
         public void EndMethod()
             => EndBody();
 
         public void BeginSwitch(string variableName)
-        {
-            AddLine($"switch ({variableName})");
-            AddLine("{");
-            tabulation++;
-        }
+        => BeginBody($"switch ({variableName})");
         public void BeginCase(string value)
         {
             AddLine($"case {value}:");
@@ -413,19 +389,15 @@ namespace NorskaLib.Tools
             => EndBody();
 
         public void BeginIf(string expression)
-        {
-            AddLine($"if ({expression})");
-            AddLine("{");
-            tabulation++;
-        }
-        public void BeginIfSimple(string expression)
+            => BeginBody($"if ({expression})");
+        public void BeginIfSingleLine(string expression)
         {
             AddLine($"if ({expression})");
             tabulation++;
         }
         public void EndIf()
             =>EndBody();
-        public void EndIfSimple()
+        public void EndIfSingleLine()
         {
             tabulation--;
         }

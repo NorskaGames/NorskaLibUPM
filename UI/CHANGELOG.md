@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Documentation and examples
 
+## [0.1.3] - 19-06-2023
+### Fixed
+- Core utilities usage
+
 ## [0.1.2] - 11-05-2023
 ### Refactored
 - Bar hierarchy

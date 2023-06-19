@@ -44,7 +44,8 @@ namespace NorskaLib.Tools
 
         private bool showSizes
             => shape == GizmosDrawerShapes.Cube
-            || shape == GizmosDrawerShapes.Cross;
+            || shape == GizmosDrawerShapes.Cross
+            || shape == GizmosDrawerShapes.Custom;
         [ShowIf(nameof(showSizes)), LabelText("Size")]
         public Vector3 sizes = Vector3.one;
 
@@ -104,15 +105,23 @@ namespace NorskaLib.Tools
                 case GizmosDrawerShapes.Custom:
                     switch (style)
                     {
-                        default:
-                        case GizmosDrawerStyles.Solid:
-                            foreach (var mesh in meshes)
-                                Gizmos.DrawMesh(mesh, position, rotation);
-                            break;
                         case GizmosDrawerStyles.Wired:
                             foreach (var mesh in meshes)
                                 Gizmos.DrawWireMesh(
-                                    mesh, position, rotation);
+                                    mesh, 
+                                    position, 
+                                    rotation,
+                                    sizes);
+                            break;
+                        
+                        default:
+                        case GizmosDrawerStyles.Solid:
+                            foreach (var mesh in meshes)
+                                Gizmos.DrawMesh(
+                                    mesh, 
+                                    position, 
+                                    rotation, 
+                                    sizes);
                             break;
                     }
                     break;
@@ -120,12 +129,13 @@ namespace NorskaLib.Tools
                 case GizmosDrawerShapes.Cube:
                     switch (style)
                     {
+                        case GizmosDrawerStyles.Wired:
+                            Gizmos.DrawWireCube(position, sizes);
+                            break;
+                        
                         default:
                         case GizmosDrawerStyles.Solid:
                             Gizmos.DrawCube(position, sizes);
-                            break;
-                        case GizmosDrawerStyles.Wired:
-                            Gizmos.DrawWireCube(position, sizes);
                             break;
                     }
                     break;

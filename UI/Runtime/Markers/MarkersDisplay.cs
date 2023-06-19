@@ -116,7 +116,7 @@ namespace NorskaLib.UI.Markers
                     && entry is IPhysicallyObscuredMarkerEntry poEntry
                     && CheckPhysicalObscurance(poEntry, entry.PivotPosition);
 
-                var show = entry.Show && EnumUtils.HasFlag((byte)entry.Modes, (byte)mode) && !physicallyObscured;
+                var show = entry.Show && EnumUtils.Intersects((byte)entry.Modes, (byte)mode) && !physicallyObscured;
 
                 var widgetExists = widgets.TryGetValue(entry, out var widget);
                 if (!show && !widgetExists)
