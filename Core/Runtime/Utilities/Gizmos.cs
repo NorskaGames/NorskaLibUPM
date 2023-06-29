@@ -171,7 +171,7 @@ namespace NorskaLib.Utilities
         }
         public static void DrawQuadWireArrow(Vector3 start, Vector3 arc, Vector3 end, int subdivision = 4)
         {
-            DrawQuadWireArrow(start, end, arc, new Vector2(0.2f, 0.2f), subdivision);
+            DrawQuadWireArrow(start, arc, end, new Vector2(0.2f, 0.2f), subdivision);
         }
 
         public static void DrawStraitWireArrow(Vector3 start, Vector3 end, Vector2 headSize)
