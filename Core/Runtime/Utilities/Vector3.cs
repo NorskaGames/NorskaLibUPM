@@ -54,5 +54,12 @@ namespace NorskaLib.Utilities
                 Mathf.RoundToInt(value.y),
                 Mathf.RoundToInt(value.z));
         }
+
+        public static Vector3 Perpendicular(Vector3 a, Vector3 b, Vector3 referenceAxis)
+        {
+            Vector3 direction = a - b;
+            Vector3 arbitraryVector = Vector3.Cross(direction, referenceAxis);
+            return -Vector3.Cross(direction, arbitraryVector).normalized;
+        }
     }
 }

@@ -1,63 +1,157 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace NorskaLib.Utilities
 {
     public struct MeshUtils
     {
-        public static Vector3[] GetCircleVertices(Vector3 origin, float radius, int subdivision = 8)
+        #region Circle
+
+        public static void GetCircleMeshData(out Vector3[] vertices, out int[] triangles, out Vector3[] normals, float radius = 1, int subdivision = 8)
+        {
+            var vertexCount = subdivision + 1;
+            var triangleCount = subdivision * 3;
+            vertices = new Vector3[vertexCount];
+            normals = new Vector3[vertexCount];
+            triangles = new int[triangleCount];
+
+            vertices[0] = Vector3.zero;
+            normals[0] = Vector3.down;
+            var angleDelta = (2 * Mathf.PI) / subdivision;
+            for (var i = 0; i < subdivision; i++)
+            {
+                var angle = i * angleDelta;
+                var x = Mathf.Cos(angle) * radius;
+                var z = Mathf.Sin(angle) * radius;
+
+                vertices[i + 1] = new Vector3(x, 0f, z);
+                normals[i + 1] = Vector3.down;
+            }
+
+            var triangleIndex = 0;
+            for (var i = 0; i < subdivision - 1; i++)
+            {
+                triangles[triangleIndex++] = 0;
+                triangles[triangleIndex++] = i + 2;
+                triangles[triangleIndex++] = i + 1;
+            }
+
+            triangles[triangleIndex++] = 0;
+            triangles[triangleIndex++] = 1;
+            triangles[triangleIndex++] = subdivision;
+
+        }
+        public static void BuildCircleMesh(Mesh mesh, float radius = 1, int subdivision = 8)
         {
             subdivision = subdivision < 8 ? 8 : subdivision;
-            var vertices = new Vector3[subdivision];
+            GetCircleMeshData(out var vertices, out var triangles, out var normals, radius, subdivision);
 
-            var angularDelta = 360.0f / subdivision;
-            for (int i = 0; i < subdivision; i++)
-                vertices[i] = MathUtils.PositionOnCircle3D(origin, angularDelta * i, radius);
-
-            return vertices;
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            mesh.normals = normals;
         }
 
-        public static Vector3[] GetSectorVertices(Vector3 origin, float facing, float span, float radius, int subdivision = 2)
+        public static void BuildCircleMesh(Mesh mesh, float radiusOuter = 1.0f, float radiusInner = 0.5f, int subdivision = 8)
         {
-            subdivision = subdivision < 2 ? 2 : subdivision;
-            var arcSubposDelta = 1.0f / subdivision;
-            var angularOrigin = facing - (span * 0.5f);
-            var angularLimit = facing + (span * 0.5f);
+            // Calculate the number of vertices
+            var verticesCount = subdivision * 2 + 2;
 
-            var vertices = new Vector3[subdivision + 2];
-            vertices[0] = origin;
-            vertices[1] = MathUtils.PositionOnCircle3D(origin, angularOrigin, radius);
-            for (int i = 1; i < subdivision; i++)
-            {
-                var angle = Mathf.Lerp(angularOrigin, angularLimit, arcSubposDelta * i);
-                vertices[i + 1] = MathUtils.PositionOnCircle3D(origin, angle, radius);
-            }
-            vertices[subdivision + 1] = MathUtils.PositionOnCircle3D(origin, angularLimit, radius);
+            var vertices = new Vector3[verticesCount];
+            var triangles = new int[subdivision * 6];
+            var normals = new Vector3[verticesCount];
 
-            return vertices;
+            // TO DO:
+            //
+
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            mesh.normals = normals;
         }
 
-        // TO DO: Optimize to avoid List<> allocation
-        public static Vector3[] GetSectorVertices(Vector3 origin, float facing, float span, float radiusInner, float radiusOuter, int subdivision = 2)
+        #endregion
+
+        #region Sector
+
+
+
+        #endregion
+
+        #region Rectangle
+
+        public static void GetRectangleMeshData(out Vector3[] vertices, out int[] triangles, out Vector3[] normals)
         {
-            subdivision = subdivision < 2 ? 2 : subdivision;
-            var angularDelta = 1.0f / subdivision;
-            var angularOrigin = facing - (span * 0.5f);
-            var angularLimit = facing + (span * 0.5f);
-
-            var vertices = new List<Vector3>(subdivision * 2 + 2);
-            for (int i = 0; i <= subdivision; i++)
+            var halfSize = Vector3.one * 0.5f;
+            vertices = new Vector3[]
             {
-                var angle = Mathf.Lerp(angularOrigin, angularLimit, angularDelta * i);
-                vertices.Add(MathUtils.PositionOnCircle3D(origin, angle, radiusOuter));
-            }
-            for (int i = subdivision; i >= 0; i--)
-            {
-                var angle = Mathf.Lerp(angularOrigin, angularLimit, angularDelta * i);
-                vertices.Add(MathUtils.PositionOnCircle3D(origin, angle, radiusInner));
-            }
+                new Vector3(+halfSize.x, 0, +halfSize.y),
+                new Vector3(-halfSize.x, 0, +halfSize.y),
+                new Vector3(-halfSize.x, 0, -halfSize.y),
+                new Vector3(+halfSize.x, 0, -halfSize.y),
+            };
 
-            return vertices.ToArray();
+            triangles = new int[] { 2, 1, 0, 0, 3, 2 };
+
+            normals = new Vector3[] { Vector3.back, Vector3.back, Vector3.back, Vector3.back };
         }
+
+        public static void BuildRectangleMesh(Mesh mesh)
+        {
+            GetRectangleMeshData(out var vertices, out var triangles, out var normals);
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            mesh.normals = normals;
+        }
+
+        #endregion
+
+        #region Cube
+
+        public static void GetCubeMeshData(out Vector3[] vertices, out int[] triangles, out Vector3[] normals)
+        {
+            vertices = new Vector3[]
+            {
+                new Vector3(-0.5f, -0.5f, 0.5f),
+                new Vector3(0.5f, -0.5f, 0.5f),
+                new Vector3(0.5f, -0.5f, -0.5f),
+                new Vector3(-0.5f, -0.5f, -0.5f),
+                new Vector3(-0.5f, 0.5f, 0.5f),
+                new Vector3(0.5f, 0.5f, 0.5f),
+                new Vector3(0.5f, 0.5f, -0.5f),
+                new Vector3(-0.5f, 0.5f, -0.5f)
+            };
+
+            triangles = new int[]
+            {
+                // Front face
+                0, 4, 1, 1, 4, 5,
+                // Back face
+                3, 7, 2, 2, 7, 6,
+                // Left face
+                0, 3, 4, 4, 3, 7,
+                // Right face
+                1, 5, 2, 2, 5, 6,
+                // Top face
+                4, 7, 5, 5, 7, 6,
+                // Bottom face
+                0, 1, 3, 3, 1, 2
+            };
+
+            normals = new Vector3[]
+            {
+                Vector3.down, Vector3.down, Vector3.down, Vector3.down,
+                Vector3.up, Vector3.up, Vector3.up, Vector3.up
+            };
+        }
+
+        public static void BuildCubeMesh(Mesh mesh)
+        {
+            GetCubeMeshData(out var vertices, out var triangles, out var normals);
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
+            mesh.normals = normals;
+        }
+
+        #endregion
     }
 }

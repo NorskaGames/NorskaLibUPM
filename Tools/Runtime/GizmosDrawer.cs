@@ -2,6 +2,7 @@
 using NorskaLib.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace NorskaLib.Tools
 {
@@ -18,7 +19,8 @@ namespace NorskaLib.Tools
         Sphere, 
         Circle,
         Sector,
-        Cross
+        Cross,
+        Rectangle
     }
     public enum GizmosDrawerStyles 
     { 
@@ -30,47 +32,69 @@ namespace NorskaLib.Tools
     {
         public GizmosDrawerShapes shape;
 
-        private bool showRadius
+        [FormerlySerializedAs("offset")]
+        public Vector3 positionOffset;
+
+        private bool ShowEulerOffsetEditor
+            => shape == GizmosDrawerShapes.Custom;
+        [ShowIf(nameof(ShowEulerOffsetEditor))]
+        public Vector3 eulerOffset;
+
+        private bool ShowRadiusEditor
             => shape == GizmosDrawerShapes.Sphere
             || shape == GizmosDrawerShapes.Circle
             || shape == GizmosDrawerShapes.Sector;
-        [ShowIf(nameof(showRadius))]
+        [ShowIf(nameof(ShowRadiusEditor))]
+        [MinValue(0)]
         public float radius = 1;
 
-        private bool showSpawn
+        // TO DO:
+        private bool ShowRadiusInnerEditor
+            => shape == GizmosDrawerShapes.Sector
+            || shape == GizmosDrawerShapes.Circle;
+        [ShowIf(nameof(ShowRadiusInnerEditor))]
+        [MinValue(0)]
+        public float radiusInner = 0.2f;
+
+        private bool ShowSpanEditor
             => shape == GizmosDrawerShapes.Sector;
-        [ShowIf(nameof(showSpawn))]
+        [ShowIf(nameof(ShowSpanEditor))]
         public float span = 90;
 
-        private bool showSizes
+        private bool ShowSizesEditor
             => shape == GizmosDrawerShapes.Cube
             || shape == GizmosDrawerShapes.Cross
-            || shape == GizmosDrawerShapes.Custom;
-        [ShowIf(nameof(showSizes)), LabelText("Size")]
+            || shape == GizmosDrawerShapes.Custom
+            || shape == GizmosDrawerShapes.Rectangle;
+        [ShowIf(nameof(ShowSizesEditor)), LabelText("Size")]
         public Vector3 sizes = Vector3.one;
 
-        private bool showMesh 
+        private bool ShowMeshEditor 
             => shape == GizmosDrawerShapes.Custom;
-        [ShowIf(nameof(showMesh))]
+        [ShowIf(nameof(ShowMeshEditor))]
         public Mesh[] meshes;
 
         [Space]
 
         public Color color = Color.blue.WithA(0.5f);
 
-        private bool showStyle
-            => shape == GizmosDrawerShapes.Custom
-            || shape == GizmosDrawerShapes.Cube
-            || shape == GizmosDrawerShapes.Sphere;
-        [ShowIf(nameof(showStyle))]
+        // TO DO:
+        // Add solid sector support
+        private bool ShowStyleEditor
+            => shape != GizmosDrawerShapes.Cross
+            && shape != GizmosDrawerShapes.Sector;
+        [ShowIf(nameof(ShowStyleEditor))]
         public GizmosDrawerStyles style;
 
         public GizmosDrawerModes mode;
-        public Vector3 offset;
 
         [Space]
 
         public bool drawForward;
+        [EnableIf(nameof(drawForward))]
+        public float forwardScale = 1;
+
+        private Mesh bufferMesh;
 
         private void OnDrawGizmos()
         {
@@ -88,17 +112,18 @@ namespace NorskaLib.Tools
             Draw();
         }
 
-        void Draw()
+        private void Draw()
         {
             Gizmos.color = color;
 
-            if (drawForward)
-            {
-                Gizmos.DrawLine(transform.position, transform.position + transform.forward);
-            }
+            if (bufferMesh == null)
+                bufferMesh = new Mesh();
 
-            var position = transform.position + offset;
-            var rotation = transform.rotation;
+            if (drawForward)
+                GizmosUtils.DrawStraitWireArrow(transform.position, transform.position + transform.forward * forwardScale);
+
+            var position = transform.position + positionOffset;
+            var rotation = transform.rotation * Quaternion.Euler(eulerOffset);
             var facing = MathUtils.AbsoluteSignedAngleXZ(this.transform);
             switch (shape)
             {
@@ -106,6 +131,8 @@ namespace NorskaLib.Tools
                     switch (style)
                     {
                         case GizmosDrawerStyles.Wired:
+                            if (meshes == null)
+                                break;
                             foreach (var mesh in meshes)
                                 Gizmos.DrawWireMesh(
                                     mesh, 
@@ -116,12 +143,15 @@ namespace NorskaLib.Tools
                         
                         default:
                         case GizmosDrawerStyles.Solid:
+                            if (meshes == null)
+                                break;
                             foreach (var mesh in meshes)
-                                Gizmos.DrawMesh(
-                                    mesh, 
-                                    position, 
-                                    rotation, 
-                                    sizes);
+                                if (mesh != null)
+                                    Gizmos.DrawMesh(
+                                        mesh, 
+                                        position, 
+                                        rotation, 
+                                        sizes);
                             break;
                     }
                     break;
@@ -154,15 +184,59 @@ namespace NorskaLib.Tools
                     break;
 
                 case GizmosDrawerShapes.Circle:
-                    GizmosUtils.DrawCircle(position, radius, 16);
+                    switch (style)
+                    {
+                        case GizmosDrawerStyles.Solid:
+                            //if (radiusInner.ApproximatelyZero())
+                                MeshUtils.BuildCircleMesh(bufferMesh, radius, 32);
+                            //else
+                            //    MeshUtils.BuildCircleMesh(bufferMesh, radius, radiusInner, 32);
+                            Gizmos.DrawMesh(bufferMesh, position, rotation);
+                            break;
+
+                        default:
+                        case GizmosDrawerStyles.Wired:
+                            GizmosUtils.DrawWireCircle(position, radius, 32);
+                            if (!radiusInner.ApproximatelyZero())
+                                GizmosUtils.DrawWireCircle(position, radiusInner, 32);
+                            break;
+                    }
                     break;
 
+                // TO DO:
+                // Add solid sector support
                 case GizmosDrawerShapes.Sector:
-                    GizmosUtils.DrawSector(position, facing, span, radius, 8);
+                    //switch (style)
+                    //{
+                    //    case GizmosDrawerStyles.Solid:
+                    //        break;
+
+                    //    case GizmosDrawerStyles.Wired:
+                    //    default:
+                            if (radiusInner.ApproximatelyZero())
+                                GizmosUtils.DrawWireSector(position, facing, span, radius, 8);
+                            else
+                                GizmosUtils.DrawWireSector(position, facing, span, radiusInner, radius, 8);
+                    //        break;
+                    //}
                     break;
 
                 case GizmosDrawerShapes.Cross:
                     GizmosUtils.DrawCrossPoint(position, sizes);
+                    break;
+
+                case GizmosDrawerShapes.Rectangle:
+                    switch (style)
+                    {
+                        case GizmosDrawerStyles.Solid:
+                            GizmosUtils.DrawSolidRectangle(position, sizes, transform.rotation, bufferMesh);
+                            break;
+
+                        default:
+                        case GizmosDrawerStyles.Wired:
+                            GizmosUtils.DrawWireRectangle(position, sizes.ToXZ(), transform.rotation);
+                            break;
+                    }
                     break;
             }
         }
