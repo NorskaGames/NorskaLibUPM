@@ -52,9 +52,7 @@ namespace NorskaLib.UI.DragAndDrop
         [ShowInInspector, ReadOnly, LabelText("Current Target")]
         public Object CurrentTargetView => CurrentTarget as Object;
 
-        [ShowInInspector, ReadOnly]
         private List<IDragAndDropItem> items;
-
         private List<RaycastResult> raycastResults;
 
         protected virtual void Awake()
@@ -145,6 +143,7 @@ namespace NorskaLib.UI.DragAndDrop
 
             IsDragging = false;
             CurrentItem = null;
+            CurrentTarget = null;
 
             DisposeDraggedTransform(draggedItem);
             DraggedTransform = null;
@@ -156,6 +155,7 @@ namespace NorskaLib.UI.DragAndDrop
             if (items.Contains(item))
                 return;
 
+            items.Add(item);
             item.OnStartsBeingDragged += OnItemDragBegins;
             item.OnStopsBeingDragged += OnItemDragEnds;
         }
