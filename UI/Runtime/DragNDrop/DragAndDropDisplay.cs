@@ -57,13 +57,13 @@ namespace NorskaLib.UI.DragAndDrop
 
         private List<RaycastResult> raycastResults;
 
-        void Awake()
+        protected virtual void Awake()
         {
             raycastResults = new List<RaycastResult>(16);
             items = new List<IDragAndDropItem>(16);
         }
 
-        void Update()
+        protected virtual void Update()
         {
             if (!IsDragging)
                 return;
@@ -111,7 +111,7 @@ namespace NorskaLib.UI.DragAndDrop
             }
         }
 
-        void OnDestroy()
+        protected virtual void OnDestroy()
         {
             for (int i = 0; i < items.Count; i++)
             {
