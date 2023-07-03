@@ -14,19 +14,19 @@ namespace NorskaLib.UI.DragAndDrop
         /// <summary>
         /// Must implement logic of resolving current mouse and/or touch position.
         /// </summary>
-        protected abstract Vector2 PointerPosition { get; }
+        public abstract Vector2 PointerPosition { get; }
 
         /// <summary>
         /// Offset from actual pointer position, added when calculating dragged item position;
         /// is useful for mobile devices, to prevent finger-covering.
         /// </summary>
-        protected virtual Vector2 ItemOffset => Vector2.zero;
+        public virtual Vector2 ItemOffset => Vector2.zero;
 
         /// <summary>
         /// Offset from actual pointer position, added when calculating target;
         /// is useful for mobile devices, to prevent finger-covering.
         /// </summary>
-        protected virtual Vector2 TargetOffset => Vector2.zero;
+        public virtual Vector2 TargetOffset => Vector2.zero;
 
         /// <summary>
         /// Uses Camera.main by default. You may want to use custom dependency injection tool.
