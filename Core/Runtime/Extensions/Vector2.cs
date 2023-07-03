@@ -1,4 +1,5 @@
 ﻿using NorskaLib.Utilities;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NorskaLib.Extensions
@@ -61,14 +62,26 @@ namespace NorskaLib.Extensions
             return Snap(position, Vector2Utils.Uniform(cellSizeUnitform));
         }
 
-        public static Vector2 InvertAxes(this Vector2 vector)
+        public static Vector2 Inverted(this Vector2 vector)
         {
             return -1 * vector;
         }
 
-        public static Vector2 SwapAxes(this Vector2 vector)
+        public static Vector2 Swapped(this Vector2 vector)
         {
             return new Vector2(vector.y, vector.x);
+        }
+
+        public static IEnumerable<float> Coordinates(this Vector2 vector)
+        {
+            yield return vector.x;
+            yield return vector.y;
+        }
+
+        public static IEnumerable<int> Coordinates(this Vector2Int vector)
+        {
+            yield return vector.x;
+            yield return vector.y;
         }
     }
 }

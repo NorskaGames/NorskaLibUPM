@@ -52,22 +52,13 @@ namespace NorskaLib.Utilities
             mesh.normals = normals;
         }
 
-        public static void BuildCircleMesh(Mesh mesh, float radiusOuter = 1.0f, float radiusInner = 0.5f, int subdivision = 8)
-        {
-            // Calculate the number of vertices
-            var verticesCount = subdivision * 2 + 2;
-
-            var vertices = new Vector3[verticesCount];
-            var triangles = new int[subdivision * 6];
-            var normals = new Vector3[verticesCount];
-
-            // TO DO:
-            //
-
-            mesh.vertices = vertices;
-            mesh.triangles = triangles;
-            mesh.normals = normals;
-        }
+        // TO DO:
+        //public static void BuildCircleMesh(Mesh mesh, float radiusOuter = 1.0f, float radiusInner = 0.5f, int subdivision = 8)
+        //{
+        //    mesh.vertices = vertices;
+        //    mesh.triangles = triangles;
+        //    mesh.normals = normals;
+        //}
 
         #endregion
 

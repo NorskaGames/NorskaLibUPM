@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace NorskaLib.Extensions
 {
-    public interface IStringIdentifiedItem
+    public interface IStringIdProvider
     {
         string Id { get; }
     }
 
-    public interface IIntegerIdentifiedItem
+    public interface IIntegerIdProvider
     {
         int Id { get; }
     }
@@ -37,7 +37,7 @@ namespace NorskaLib.Extensions
             return false;
         }
 
-        public static bool TryGet<T>(this IEnumerable<T> collection, string id, out T result) where T : IStringIdentifiedItem
+        public static bool TryGet<T>(this IEnumerable<T> collection, string id, out T result) where T : IStringIdProvider
         {
             foreach (var item in collection)
                 if (item.Id == id)
@@ -50,7 +50,7 @@ namespace NorskaLib.Extensions
             return false;
         }
 
-        public static bool TryGet<T>(this IEnumerable<T> collection, int id, out T result) where T : IIntegerIdentifiedItem
+        public static bool TryGet<T>(this IEnumerable<T> collection, int id, out T result) where T : IIntegerIdProvider
         {
             foreach (var item in collection)
                 if (item.Id == id)

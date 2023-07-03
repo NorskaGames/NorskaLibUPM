@@ -7,13 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - More Extensions and Utilities
 
+## [0.1.5] - 02-07-2023
+### Added
+- New extensions and utilities
+
 ## [0.1.4] - 12-06-2023
 ### Added
-- Added new extensions abd utilities
+- New extensions and utilities
 
 ## [0.1.3] - 24-05-2023
 ### Added
-- Added new extensions abd utilities
+- New extensions and utilities
 
 ## [0.1.2] - 18-05-2023
 ### Added

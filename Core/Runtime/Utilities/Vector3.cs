@@ -61,5 +61,13 @@ namespace NorskaLib.Utilities
             Vector3 arbitraryVector = Vector3.Cross(direction, referenceAxis);
             return -Vector3.Cross(direction, arbitraryVector).normalized;
         }
+
+        public static Vector3 InverseLerp(Vector3 a, Vector3 b, Vector3 position)
+        {
+            return new Vector3(
+                Mathf.InverseLerp(a.x, b.x, position.x),
+                Mathf.InverseLerp(a.y, b.y, position.y),
+                Mathf.InverseLerp(a.z, b.z, position.z));
+        }
     }
 }

@@ -30,5 +30,12 @@ namespace NorskaLib.Utilities
                 Mathf.RoundToInt(value.x),
                 Mathf.RoundToInt(value.y));
         }
+
+        public static Vector2 InverseLerp(Vector2 a, Vector2 b, Vector2 position)
+        {
+            return new Vector2(
+                Mathf.InverseLerp(a.x, b.x, position.x), 
+                Mathf.InverseLerp(a.y, b.y, position.y));
+        }
     }
 }

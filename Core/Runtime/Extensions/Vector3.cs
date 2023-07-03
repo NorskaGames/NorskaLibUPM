@@ -1,4 +1,5 @@
 using NorskaLib.Utilities;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NorskaLib.Extensions
@@ -62,6 +63,20 @@ namespace NorskaLib.Extensions
         public static Vector3 Snap(this Vector3 position, float cellSizeUnitform = 1)
         {
             return Snap(position, Vector3Utils.Uniform(cellSizeUnitform));
+        }
+
+        public static IEnumerable<float> Coordinates(this Vector3 vector)
+        {
+            yield return vector.x;
+            yield return vector.y;
+            yield return vector.z;
+        }
+
+        public static IEnumerable<int> Coordinates(this Vector3Int vector)
+        {
+            yield return vector.x;
+            yield return vector.y;
+            yield return vector.z;
         }
     }
 }

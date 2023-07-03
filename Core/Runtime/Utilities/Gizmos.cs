@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace NorskaLib.Utilities
 {
@@ -63,11 +64,11 @@ namespace NorskaLib.Utilities
 
             DrawPolyline(GetVerticesLazy(), true);
         }
-        // TO DO:
-        //public static void DrawSolidCircle(Vector3 origin, float radius, Mesh bufferMesh)
-        //{
-
-        //}
+        public static void DrawSolidCircle(Vector3 origin, float radius, Mesh bufferMesh, int subdivision = 32)
+        {
+            MeshUtils.BuildCircleMesh(bufferMesh, radius, subdivision);
+            Gizmos.DrawMesh(bufferMesh, origin, Quaternion.identity);
+        }
 
         public static void DrawWireRectangle(Vector3 center, Vector2 size)
         {
@@ -164,24 +165,36 @@ namespace NorskaLib.Utilities
             DrawPolyline(GetVerticesLazy(), false);
         }
 
-        public static void DrawQuadWireArrow(Vector3 start, Vector3 arc, Vector3 end, Vector2 headSize, int subdivision = 4)
+        /// <summary>
+        /// Draws a quad-curved line with an arrowhead at the end position.  
+        /// </summary>
+        public static void DrawWireArrow(Vector3 start, Vector3 arc, Vector3 end, Vector2 headSize, int subdivision = 4)
         {
             DrawQuadLine(start, arc, end, subdivision);
             DrawWireArrowHead(arc, end, headSize);
         }
-        public static void DrawQuadWireArrow(Vector3 start, Vector3 arc, Vector3 end, int subdivision = 4)
+        /// <summary>
+        /// Draws a quad-curved line with an arrowhead at the end position.  
+        /// </summary>
+        public static void DrawWireArrow(Vector3 start, Vector3 arc, Vector3 end, int subdivision = 4)
         {
-            DrawQuadWireArrow(start, arc, end, new Vector2(0.2f, 0.2f), subdivision);
+            DrawWireArrow(start, arc, end, new Vector2(0.2f, 0.2f), subdivision);
         }
 
-        public static void DrawStraitWireArrow(Vector3 start, Vector3 end, Vector2 headSize)
+        /// <summary>
+        /// Draws a straight line with an arrowhead at the end position.  
+        /// </summary>
+        public static void DrawWireArrow(Vector3 start, Vector3 end, Vector2 headSize)
         {
             Gizmos.DrawLine(start, end);
             DrawWireArrowHead(start, end, headSize);
         }
-        public static void DrawStraitWireArrow(Vector3 start, Vector3 end)
+        /// <summary>
+        /// Draws a straight line with an arrowhead at the end position.  
+        /// </summary>
+        public static void DrawWireArrow(Vector3 start, Vector3 end)
         {
-            DrawStraitWireArrow(start, end, new Vector2(0.2f, 0.2f));
+            DrawWireArrow(start, end, new Vector2(0.2f, 0.2f));
         }
 
         private static void DrawWireArrowHead(Vector3 from, Vector3 to, Vector2 headSize)
