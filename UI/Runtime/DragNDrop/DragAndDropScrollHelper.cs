@@ -49,9 +49,6 @@ namespace NorskaLib.UI.DragAndDrop
         public float speed = 200;
 
 		public AnimationCurve speedCurve;
-
-		public Vector2Int referenceResolution = new Vector2Int(1280, 720);
-
 		private RectTransform checkBounds;
 
 		void Awake()
@@ -86,7 +83,6 @@ namespace NorskaLib.UI.DragAndDrop
 				out var localAbsolutePosition);
 
 			var screenResolution = new Vector2(Screen.width, Screen.height);
-			var scaleFactor = screenResolution / referenceResolution;
 			var localNormalizedPosition = checkBounds.NormalizedRectPostion(localAbsolutePosition);
 
             var positionFactor = default(float);
@@ -108,7 +104,7 @@ namespace NorskaLib.UI.DragAndDrop
 							break;
 					}
 
-					speedFactor = speedCurve.Evaluate(positionFactor) * speed * scaleFactor.y;
+					speedFactor = speedCurve.Evaluate(positionFactor) * speed;
 					var y = Mathf.Clamp(scroll.content.anchoredPosition.y + directionFactor * speedFactor * Time.deltaTime,
 						0,
 						scroll.viewport.rect.height); 
@@ -129,7 +125,7 @@ namespace NorskaLib.UI.DragAndDrop
                             break;
 					}
 
-					speedFactor = speedCurve.Evaluate(positionFactor) * speed * scaleFactor.x;
+					speedFactor = speedCurve.Evaluate(positionFactor) * speed;
 					var x = Mathf.Clamp(scroll.content.anchoredPosition.x + directionFactor * speedFactor * Time.deltaTime,
 						0,
                         scroll.viewport.rect.width);
