@@ -75,14 +75,15 @@ namespace NorskaLib.UI.DragAndDrop
 				return;
 
 			var globalPosition = display.PointerPosition + display.TargetOffset;
-			var isInBounds = RectTransformUtility.ScreenPointToLocalPointInRectangle(
+			var isInBounds = RectTransformUtility.RectangleContainsScreenPoint(checkBounds, globalPosition);
+			if (!isInBounds)
+				return;
+
+			RectTransformUtility.ScreenPointToLocalPointInRectangle(
 				checkBounds, 
 				globalPosition, 
 				null, 
 				out var localAbsolutePosition);
-
-			if (!isInBounds)
-				return;
 
 			var screenResolution = new Vector2(Screen.width, Screen.height);
 			var scaleFactor = screenResolution / referenceResolution;
