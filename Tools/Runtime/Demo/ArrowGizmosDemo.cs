@@ -20,9 +20,9 @@ namespace NorskaLib.Tools.Demo
                 return;
 
             if (arcPoint == null)
-                GizmosUtils.DrawStraitWireArrow(startPoint.position, endPoint.position, arrowHeadSize);
+                GizmosUtils.DrawWireArrow(startPoint.position, endPoint.position, arrowHeadSize);
             else
-                GizmosUtils.DrawQuadWireArrow(startPoint.position, arcPoint.position, endPoint.position, arrowHeadSize, 8);
+                GizmosUtils.DrawWireArrow(startPoint.position, arcPoint.position, endPoint.position, arrowHeadSize, 8);
         }
     }
 }

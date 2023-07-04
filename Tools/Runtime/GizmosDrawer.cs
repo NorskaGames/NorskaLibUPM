@@ -120,7 +120,7 @@ namespace NorskaLib.Tools
                 bufferMesh = new Mesh();
 
             if (drawForward)
-                GizmosUtils.DrawStraitWireArrow(transform.position, transform.position + transform.forward * forwardScale);
+                GizmosUtils.DrawWireArrow(transform.position, transform.position + transform.forward * forwardScale);
 
             var position = transform.position + positionOffset;
             var rotation = transform.rotation * Quaternion.Euler(eulerOffset);
@@ -188,10 +188,9 @@ namespace NorskaLib.Tools
                     {
                         case GizmosDrawerStyles.Solid:
                             //if (radiusInner.ApproximatelyZero())
-                                MeshUtils.BuildCircleMesh(bufferMesh, radius, 32);
+                                GizmosUtils.DrawSolidCircle(position, radius, bufferMesh);
                             //else
                             //    MeshUtils.BuildCircleMesh(bufferMesh, radius, radiusInner, 32);
-                            Gizmos.DrawMesh(bufferMesh, position, rotation);
                             break;
 
                         default:
