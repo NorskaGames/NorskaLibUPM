@@ -85,28 +85,32 @@ namespace NorskaLib.UI.DragAndDrop
             EventSystem.current.RaycastAll(targetPointerData, raycastResults);
             var raycastedTarget = default(IDragAndDropTarget);
             var raycastedAny = raycastResults.Count > 0 && raycastResults[0].gameObject.TryGetComponent(out raycastedTarget);
-            var hasValidTarget = raycastedAny && raycastedTarget != CurrentTarget && raycastedTarget != CurrentItem;
-            if (hasValidTarget)
+            var hasValidTarget = raycastedAny && raycastedTarget != CurrentItem;
+
+            if (CurrentTarget == null)
             {
-                if (CurrentTarget == null)
+                if (hasValidTarget)
                 {
                     raycastedTarget.OnStartsBeingTargeted();
                     OnTargetAquired(pointerPosition, raycastedTarget);
+                    CurrentTarget = raycastedTarget;
                 }
-                else
+            }
+            else
+            {
+                if (!hasValidTarget)
                 {
+                    OnTargetLost(pointerPosition, CurrentTarget);
                     CurrentTarget.OnStopsBeingTargeted();
+                    CurrentTarget = null;
+                }
+                else if (raycastedTarget != CurrentTarget)
+                {
                     raycastedTarget.OnStartsBeingTargeted();
                     OnTargetChanged(pointerPosition, CurrentTarget, raycastedTarget);
+                    CurrentTarget.OnStopsBeingTargeted();
+                    CurrentTarget = raycastedTarget;
                 }
-
-                CurrentTarget = raycastedTarget;
-            }
-            else if (CurrentTarget != null)
-            {
-                OnTargetLost(pointerPosition, CurrentTarget);
-                CurrentTarget.OnStopsBeingTargeted();
-                CurrentTarget = null;
             }
         }
 
