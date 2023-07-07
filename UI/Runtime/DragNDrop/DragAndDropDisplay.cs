@@ -76,32 +76,33 @@ namespace NorskaLib.UI.DragAndDrop
             DraggedTransform.anchoredPosition = itemAnchoredPosition;
 
             // TO DO:
-            // Move to Utils static function
+            // Move to Utils static function?
             var targetPointerData = new PointerEventData(EventSystem.current)
             {
                 position = PointerPosition + TargetOffset
             };
             raycastResults.Clear();
             EventSystem.current.RaycastAll(targetPointerData, raycastResults);
-            var detectedTarget = default(IDragAndDropTarget);
-            var anyTarget = raycastResults.Count > 0 && raycastResults[0].gameObject.TryGetComponent(out detectedTarget);
-            if (anyTarget && detectedTarget != CurrentTarget)
+            var raycastedTarget = default(IDragAndDropTarget);
+            var raycastedAny = raycastResults.Count > 0 && raycastResults[0].gameObject.TryGetComponent(out raycastedTarget);
+            var hasValidTarget = raycastedAny && raycastedTarget != CurrentTarget && raycastedTarget != CurrentItem;
+            if (hasValidTarget)
             {
                 if (CurrentTarget == null)
                 {
-                    detectedTarget.OnStartsBeingTargeted();
-                    OnTargetAquired(pointerPosition, detectedTarget);
+                    raycastedTarget.OnStartsBeingTargeted();
+                    OnTargetAquired(pointerPosition, raycastedTarget);
                 }
                 else
                 {
                     CurrentTarget.OnStopsBeingTargeted();
-                    detectedTarget.OnStartsBeingTargeted();
-                    OnTargetChanged(pointerPosition, CurrentTarget, detectedTarget);
+                    raycastedTarget.OnStartsBeingTargeted();
+                    OnTargetChanged(pointerPosition, CurrentTarget, raycastedTarget);
                 }
 
-                CurrentTarget = detectedTarget;
+                CurrentTarget = raycastedTarget;
             }
-            else if (!anyTarget && CurrentTarget != null)
+            else if (CurrentTarget != null)
             {
                 OnTargetLost(pointerPosition, CurrentTarget);
                 CurrentTarget.OnStopsBeingTargeted();
@@ -126,6 +127,14 @@ namespace NorskaLib.UI.DragAndDrop
             CurrentItem = draggedItem;
 
             DraggedTransform = ResolveDraggedTransform(draggedItem);
+            var pointerPosition = PointerPosition;
+            var itemScreenPosition = pointerPosition + ItemOffset;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                DisplayTransform,
+                itemScreenPosition,
+                null,
+                out var itemAnchoredPosition);
+            DraggedTransform.anchoredPosition = itemAnchoredPosition;
             OnDragStarted(PointerPosition, draggedItem);
         }
         public abstract RectTransform ResolveDraggedTransform(IDragAndDropItem draggedItem);
