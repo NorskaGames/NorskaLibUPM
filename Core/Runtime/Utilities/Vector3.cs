@@ -1,3 +1,4 @@
+using Codice.Client.BaseCommands;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -69,5 +70,15 @@ namespace NorskaLib.Utilities
                 Mathf.InverseLerp(a.y, b.y, position.y),
                 Mathf.InverseLerp(a.z, b.z, position.z));
         }
+
+        public static Vector3 Clamp01(Vector3 value)
+            => Clamp(value, Uniform(0), Uniform(1));
+        public static Vector3 Clamp(Vector3 value, float min, float max) 
+            => Clamp(value, Uniform(min), Uniform(max));
+        public static Vector3 Clamp(Vector3 value, Vector3 min, Vector3 max) 
+            => new Vector3(
+                x: Mathf.Clamp(value.x, min.x, max.x),
+                y: Mathf.Clamp(value.y, min.y, max.y),
+                z: Mathf.Clamp(value.z, min.z, max.z));
     }
 }

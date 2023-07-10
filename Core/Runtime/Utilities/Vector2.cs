@@ -37,5 +37,14 @@ namespace NorskaLib.Utilities
                 Mathf.InverseLerp(a.x, b.x, position.x), 
                 Mathf.InverseLerp(a.y, b.y, position.y));
         }
+
+        public static Vector2 Clamp01(Vector2 value)
+            => Clamp(value, Uniform(0), Uniform(1));
+        public static Vector2 Clamp(Vector2 value, float min, float max)
+            => Clamp(value, new Vector2(min, min), new Vector2(max, max));
+        public static Vector2 Clamp(Vector2 value, Vector2 min, Vector2 max)
+            => new Vector2(
+                x: Mathf.Clamp(value.x, min.x, max.x),
+                y: Mathf.Clamp(value.y, min.y, max.y));
     }
 }
