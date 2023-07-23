@@ -6,16 +6,9 @@ namespace NorskaLib.UI
 {
     public class SliderBar : Bar
     {
-        [SerializeField] protected Image backgroundImage;
-        public Image BackgroundImage => backgroundImage;
-        [Tooltip("Optional \"second\" fill image.")]
-        [SerializeField] protected Image tintImage;
-        public Image TintImage => tintImage;
-        [SerializeField] protected Image foregroundImage;
-        public Image ForegroundImage => foregroundImage;
-
-        [Tooltip("Optional \"second\" fill image.")]
+        [Tooltip("Optional \"second\" fill image, which fills after foreground with a slight delay.")]
         [SerializeField] Slider tintSlider;
+
         [SerializeField] Slider foregroundSlider;
 
         [Space]
@@ -25,6 +18,11 @@ namespace NorskaLib.UI
 
         private Sequence animationSequence;
         private float lastFill;
+
+        protected virtual void OnDisable()
+        {
+            animationSequence?.Kill(true);
+        }
 
         public override void FillImmediate(float fill)
         {

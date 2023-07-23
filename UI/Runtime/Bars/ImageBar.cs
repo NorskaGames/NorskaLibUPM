@@ -6,13 +6,10 @@ namespace NorskaLib.UI
 {
     public class ImageBar : Bar
     {
-        [SerializeField] protected Image backgroundImage;
-        public Image BackgroundImage => backgroundImage;
-        [Tooltip("Optional \"second\" fill image.")]
+        [Tooltip("Optional \"second\" fill image, which fills after foreground with a slight delay.")]
         [SerializeField] protected Image tintImage;
-        public Image TintImage => tintImage;
+
         [SerializeField] protected Image foregroundImage;
-        public Image ForegroundImage => foregroundImage;
 
         [Space]
 
@@ -22,19 +19,10 @@ namespace NorskaLib.UI
         private Sequence animationSequence;
         private float lastFill;
 
-        #region MonoBehaviour
-
-        protected virtual void OnEnable()
-        {
-            
-        }
-
         protected virtual void OnDisable()
         {
             animationSequence?.Kill(true);
         }
-
-        #endregion
 
         public override void FillImmediate(float fill)
         {

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Documentation and examples
 
+## [0.1.5] - 23-07-2023
+### Refactored
+- Bar classes tree
+### Added
+- DiscreteBar
+
 ## [0.1.4] - 30-06-2023
 ### Refactored
 - DragAndDrop tools
