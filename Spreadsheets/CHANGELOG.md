@@ -6,9 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Documentation and examples
-- Proper import toggle caching
 - Boolean and float parsing settings customization
 - Yandex documents support
+
+## [0.1.1] - 23-07-2023
+### Added
+- JSON and binary serialization support
+### Refactored
+- Import settings caching
 
 ## [0.1.0] - 07-05-2023
 ### Added

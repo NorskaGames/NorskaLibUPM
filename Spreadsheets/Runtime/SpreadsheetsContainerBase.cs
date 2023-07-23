@@ -1,19 +1,59 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NorskaLib.Spreadsheets
 {
+    public enum SpreadsheetSerializationFormat
+    {
+        JSON,
+        Binary
+    }
+
     public abstract class SpreadsheetsContainerBase : ScriptableObject
     {
-        // TO DO:
-        // 1. Multiple source support:
-        // - Google Spreadsheets
-        // - Yandex Spreadsheets
+        #region Editor
+#if UNITY_EDITOR
 
-        // 2. Serialization support:
-        // - *.json 
-        // - *.bin
+        /// <summary>
+        /// NOTE: This field is used in the Editor only and should not be adressed in the build!
+        /// </summary>
+        [SerializeField, HideInInspector]
+        public string documentId;
 
-        [SerializeField] [HideInInspector]
-        public string documentID;
+        /// <summary>
+        /// NOTE: This field is used in the Editor only and should not be adressed in the build!
+        /// </summary>
+        [SerializeField, HideInInspector]
+        public List<string> selectedTogglesIds;
+
+        /// <summary>
+        /// NOTE: This field is used in the Editor only and should not be adressed in the build!
+        /// </summary>
+        [SerializeField, HideInInspector]
+        public bool foldoutImportGUI;
+
+        /// <summary>
+        /// NOTE: This field is used in the Editor only and should not be adressed in the build!
+        /// </summary>
+        [SerializeField, HideInInspector]
+        public bool foldoutSerializationGUI;
+
+        /// <summary>
+        /// NOTE: This field is used in the Editor only and should not be adressed in the build!
+        /// </summary>
+        [SerializeField, HideInInspector]
+        public string serializationOutputPath = "../../Configs";
+
+        /// <summary>
+        /// NOTE: This field is used in the Editor only and should not be adressed in the build!
+        /// </summary>
+        [SerializeField, HideInInspector]
+        public string serializationFileName = "Configs.v0.1";
+
+        [SerializeField, HideInInspector]
+        public SpreadsheetSerializationFormat serializationFormat;
+
+#endif
+        #endregion
     }
 }

@@ -10,15 +10,15 @@ using UnityEngine;
 
 namespace NorskaLib.Spreadsheets
 {
-    public class ImportQueue
+    public class SpreadsheetImporter
     {
         public const string URLFormat = @"https://docs.google.com/spreadsheets/d/{0}/gviz/tq?tqx=out:csv&sheet={1}";
 
-        private readonly SpreadsheetsContainerBase container;
-        private readonly FieldInfo[] listsInfos;
+        private readonly object targetObject;
+        private readonly FieldInfo[] targetListsFields;
         private readonly string documentID;
 
-        public Action<SpreadsheetsContainerBase> onComplete;
+        public event Action onComplete;
 
         public bool abort;
 
@@ -33,7 +33,7 @@ namespace NorskaLib.Spreadsheets
                 onOutputChanged.Invoke();
             }
         }
-        public Action onOutputChanged;
+        public event Action onOutputChanged;
 
         public float progress;
         public float Progress
@@ -46,16 +46,16 @@ namespace NorskaLib.Spreadsheets
                 onProgressChanged.Invoke();
             }
         }
-        public Action onProgressChanged;
+        public event Action onProgressChanged;
 
         private float ProgressElementDelta
-            => 1f / listsInfos.Length;
+            => 1f / targetListsFields.Length;
 
-        public ImportQueue(SpreadsheetsContainerBase container, FieldInfo[] listsInfos)
+        public SpreadsheetImporter(object targetObject, FieldInfo[] targetListsFields, string documentID)
         {
-            this.container = container;
-            this.listsInfos = listsInfos;
-            this.documentID = container.documentID;
+            this.targetObject = targetObject;
+            this.targetListsFields = targetListsFields;
+            this.documentID = documentID;
         }
 
         public async void Run()
@@ -63,32 +63,29 @@ namespace NorskaLib.Spreadsheets
             abort = false;
             var webClient = new WebClient();
 
-            for (int i = 0; i < listsInfos.Length && !abort; i++)
-                await PopulateList(container, listsInfos[i], webClient);
+            for (int i = 0; i < targetListsFields.Length && !abort; i++)
+                await PopulateList(targetObject, targetListsFields[i], webClient);
 
             webClient.Dispose();
 
-            onComplete.Invoke(container);
+            onComplete?.Invoke();
         }
 
-        private async Task PopulateList(SpreadsheetsContainerBase container, FieldInfo listInfo, WebClient webClient)
+        private async Task PopulateList(object targetObject, FieldInfo targetListField, WebClient webClient)
         {
-            var contentType = listInfo.FieldType.GetGenericArguments().SingleOrDefault();
+            var contentType = targetListField.FieldType.GetGenericArguments().SingleOrDefault();
             if (contentType is null)
-            {
-                Debug.LogError($"Could not identify type of defs stored in {listInfo.Name}");
-                return;
-            }
+                throw new Exception($"Could not identify type of defs stored in {targetListField.Name}");
 
             #region Downloading page
 
-            var googleSheetRef = (PageNameAttribute)Attribute.GetCustomAttribute(listInfo, typeof(PageNameAttribute));
-            var pagename = googleSheetRef.name;
+            var pageAttribute = (SpreadsheetPageAttribute)Attribute.GetCustomAttribute(targetListField, typeof(SpreadsheetPageAttribute));
+            var pageName = pageAttribute.name;
 
-            Output = $"Downloading page '{pagename}'...";
+            Output = $"Downloading page '{pageName}'...";
 
-            var url = string.Format(URLFormat, documentID, pagename);
-            Task<string> request;
+            var url = string.Format(URLFormat, documentID, pageName);
+            var request = default(Task<string>);
 
             try
             {
@@ -149,20 +146,21 @@ namespace NorskaLib.Spreadsheets
 
             #region Parsing and populating list of defs 
 
-            Output = $"Populating list of defs '{listInfo.Name}'<{contentType.Name}>...";
+            Output = $"Populating list of defs '{targetListField.Name}'<{contentType.Name}>...";
 
             var headersToFields = new Dictionary<string, FieldInfo>();
-            foreach (var h in headers)
+            foreach (var header in headers)
             {
                 // TO DO:
                 // Add support of fields with names other than the header names via an attribute
-                var fieldInfo = contentType.GetField(h, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                var fieldInfo = contentType.GetField(header, bindingFlags);
                 if (fieldInfo is null)
                 {
-                    Debug.LogWarning($"Header '{h}' match no field in {contentType.Name} type");
+                    Debug.LogWarning($"Header '{header}' match no field in {contentType.Name} type");
                     continue;
                 }
-                headersToFields.Add(h, fieldInfo);
+                headersToFields.Add(header, fieldInfo);
             }
 
             var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(contentType));
@@ -177,7 +175,7 @@ namespace NorskaLib.Spreadsheets
                 list.Add(item);
             }
 
-            listInfo.SetValue(container, list);
+            targetListField.SetValue(targetObject, list);
 
             Progress += 1 / 3f * ProgressElementDelta;
 

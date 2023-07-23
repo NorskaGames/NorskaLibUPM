@@ -1,143 +1,232 @@
 using System;
+using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
+using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 namespace NorskaLib.Spreadsheets
 {
     [CustomEditor(typeof(SpreadsheetsContainerBase), true)]
     public class SpreadsheetContainerEditor : Editor
     {
-        bool foldout = true;
-        Dictionary<string, bool> pagesToggles;
+        private const string RelativePathNotation = "..";
 
-        ImportQueue importQueue;
+        private SpreadsheetsContainerBase container;
+        private SpreadsheetImporter importer;
+        private string[] possibleTogglesIds;
 
         public override void OnInspectorGUI()
         {
-            var container = (SpreadsheetsContainerBase)target;
+            container = (SpreadsheetsContainerBase)target;
+            var contentFieldBinding = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
+            var contentField = container.GetType().GetFields(contentFieldBinding)
+                .Where(fi => Attribute.IsDefined(fi, typeof(SpreadsheetContentAttribute)))
+                .FirstOrDefault();
+            if (contentField == null)
+            {
+                EditorGUILayout.HelpBox("Error: Missing field marked with [SpreadsheetContent] attribute!", MessageType.Error);
+                base.OnInspectorGUI();
+                return;
+            }
+            var content = contentField.GetValue(container);
 
-            foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, "Import settings");
-            if (foldout)
-                DrawGUI(container);
+            container.foldoutImportGUI = EditorGUILayout.BeginFoldoutHeaderGroup(container.foldoutImportGUI, "Import");
+            if (container.foldoutImportGUI)
+                DrawImportGUI(content);
+            EditorGUILayout.EndFoldoutHeaderGroup();
+
+            container.foldoutSerializationGUI = EditorGUILayout.BeginFoldoutHeaderGroup(container.foldoutSerializationGUI, "Serialization");
+            if (container.foldoutSerializationGUI)
+                DrawSerializationGUI(content);
             EditorGUILayout.EndFoldoutHeaderGroup();
 
             EditorGUILayout.Space(16);
 
             base.OnInspectorGUI();
+
+            if (GUI.changed)
+                EditorUtility.SetDirty(target);
         }
 
-        void DrawGUI(SpreadsheetsContainerBase container)
+        void DrawImportGUI(object content)
         {
-            var listsInfos = container.GetType().GetFields()
-                .Where(fi => Attribute.IsDefined(fi, typeof(PageNameAttribute)))
-                .OrderBy(i => i.Name).ToArray();
+            var listsFieldBinding = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
+            var contentFields = content.GetType().GetFields(listsFieldBinding);
+            var listsFields = contentFields
+                .Where(fi => Attribute.IsDefined(fi, typeof(SpreadsheetPageAttribute)))
+                .OrderBy(fi => fi.Name)
+                .ToArray();
 
-            if (pagesToggles == null)
-            {
-                pagesToggles = new Dictionary<string, bool>();
-                for (int i = 0; i < listsInfos.Length; i++)
-                    pagesToggles.Add(listsInfos[i].Name, EditorPrefs.GetBool(listsInfos[i].Name));
-            }
+            possibleTogglesIds ??= listsFields
+                    .Select(fi => fi.Name)
+                    .ToArray();
 
-            EditorGUILayout.BeginVertical("box");
+            var anySelected = container.selectedTogglesIds.Any();
+            var allSelected = !possibleTogglesIds.Any(toggleId => !container.selectedTogglesIds.Contains(toggleId));
 
-            #region Draw doc ID field
+            #region Document Id field
 
-            container.documentID = EditorGUILayout.TextField(
+            container.documentId = EditorGUILayout.TextField(
                 new GUIContent(
                     "Document Id",
-                    "The XXXX part in 'https://docs.google.com/spreadsheets/d/XXXX/edit' URL. NOTE: The document must be accessable by link."),
-                container.documentID);
+                    "The XXXX part in 'https://docs.google.com/spreadsheets/d/XXXX/edit' URL.\n\nNOTE: The document must be accessable by link."),
+                container.documentId);
 
             #endregion
 
-            #region Draw controll buttons
+            #region Control buttons
 
             EditorGUILayout.BeginHorizontal();
 
+            EditorGUI.BeginDisabledGroup(allSelected);
             if (GUILayout.Button("All"))
                 SelectAll(true);
+            EditorGUI.EndDisabledGroup();
 
+            EditorGUI.BeginDisabledGroup(!anySelected);
             if (GUILayout.Button("None"))
                 SelectAll(false);
 
             if (GUILayout.Button("Import"))
             {
-                if (pagesToggles.Any(t => t.Value == true))
+                if (!container.selectedTogglesIds.Any())
                 {
-                    if (string.IsNullOrEmpty(container.documentID))
-                    {
-                        Debug.LogError($"Document ID is not specified!");
-                        return;
-                    }
-
-                    EditorUtility.DisplayProgressBar("Downloading definitions", "Initializing...", 0);
-
-                    importQueue = new ImportQueue(container, listsInfos.Where(i => pagesToggles[i.Name] == true).ToArray());
-
-                    importQueue.onComplete += OnImportQueueComplete;
-                    importQueue.onOutputChanged += OnOutputChanged;
-                    importQueue.onProgressChanged += OnProgressChanged;
-
-                    importQueue.Run();
-                }
-                else
                     Debug.LogWarning("Nothing is selected to import");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(container.documentId))
+                    throw new Exception($"Document ID is not specified!");
+
+
+                EditorUtility.DisplayProgressBar("Downloading definitions", "Initializing...", 0);
+
+                var targetListsFields = listsFields.Where(fi => container.selectedTogglesIds.Contains(fi.Name)).ToArray();
+                importer = new SpreadsheetImporter(content, targetListsFields, container.documentId);
+
+                importer.onComplete += OnImportQueueComplete;
+                importer.onOutputChanged += OnOutputChanged;
+                importer.onProgressChanged += OnProgressChanged;
+
+                importer.Run();
             }
+            EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.EndHorizontal();
 
             #endregion
 
-            #region Draw import flags
+            #region Pages toggles
 
             EditorGUILayout.LabelField("Pages to import:");
 
             EditorGUI.indentLevel += 1;
 
-            var keys = new List<string>(pagesToggles.Keys);
-            foreach (var key in keys)
+            foreach (var toggleId in possibleTogglesIds)
             {
-                pagesToggles[key] = EditorGUILayout.Toggle($"{key}", pagesToggles[key]);
-                EditorPrefs.SetBool(key, pagesToggles[key]);
+                var crntValue = container.selectedTogglesIds.Contains(toggleId);
+                var newValue = EditorGUILayout.Toggle($"{toggleId}", crntValue);
+                if (newValue != crntValue)
+                    SelectToggle(toggleId, newValue);
             }
 
             EditorGUI.indentLevel -= 1;
 
             #endregion
+        }
 
-            EditorGUILayout.EndVertical();
+        void DrawSerializationGUI(object content)
+        {
+            #region Settings fields
+
+            container.serializationOutputPath = EditorGUILayout.TextField(
+                new GUIContent(
+                    "Output path",
+                    "HINT: use '../' notation to specify path, relative to your project 'Assets' directory."),
+                container.serializationOutputPath);
+
+            container.serializationFileName = EditorGUILayout.TextField(
+                "File Name",
+                container.serializationFileName);
+
+            container.serializationFormat = (SpreadsheetSerializationFormat)EditorGUILayout.EnumPopup("Format", container.serializationFormat);
+
+            #endregion
+
+            #region Control buttons
+            EditorGUILayout.BeginHorizontal();
+
+            var disableSerializeButton = string.IsNullOrWhiteSpace(container.serializationOutputPath) || string.IsNullOrWhiteSpace(container.serializationFileName);
+            EditorGUI.BeginDisabledGroup(disableSerializeButton);
+            if (GUILayout.Button("Serialize"))
+            {
+                var serializer = default(SpreadsheetSerializer);
+                var outputPath = container.serializationOutputPath.StartsWith(RelativePathNotation)
+                    ? Path.GetFullPath(Path.Combine(Application.dataPath, container.serializationOutputPath))
+                    : container.serializationOutputPath;
+                if (!Directory.Exists(outputPath))
+                    throw new Exception($"Missing directory '{outputPath}'!");
+
+                switch (container.serializationFormat)
+                {
+                    default:
+                    case SpreadsheetSerializationFormat.JSON:
+
+                        outputPath = Path.Combine(outputPath, container.serializationFileName + ".json");
+                        serializer = new SpreadsheetJSONSerializer(content, outputPath);
+                        serializer.Run();
+                        break;
+
+                    case SpreadsheetSerializationFormat.Binary:
+                        outputPath = Path.Combine(outputPath, container.serializationFileName + ".bin");
+                        serializer = new SpreadsheetBinarySerializer(content, outputPath);
+                        serializer.Run();
+                        break;
+
+                }
+            }
+            EditorGUI.EndDisabledGroup();
+
+
+            EditorGUILayout.EndHorizontal();
+            #endregion
         }
 
         void SelectAll(bool mode)
         {
-            var keys = new List<string>(pagesToggles.Keys);
-            foreach (var key in keys)
-                pagesToggles[key] = mode;
+            foreach (var toggleId in possibleTogglesIds)
+                SelectToggle(toggleId, mode);
+        }
+
+        void SelectToggle(string toggleId, bool mode)
+        {
+            if (mode && !container.selectedTogglesIds.Contains(toggleId))
+                container.selectedTogglesIds.Add(toggleId);
+            else if (!mode)
+                container.selectedTogglesIds.Remove(toggleId);
         }
 
         void OnProgressChanged()
         {
-            EditorUtility.DisplayProgressBar("Downloading definitions", importQueue.Output, importQueue.Progress);
+            EditorUtility.DisplayProgressBar("Downloading definitions", importer.Output, importer.Progress);
         }
 
         void OnOutputChanged()
         {
-            EditorUtility.DisplayProgressBar("Downloading definitions", importQueue.Output, importQueue.Progress);
+            EditorUtility.DisplayProgressBar("Downloading definitions", importer.Output, importer.Progress);
         }
 
-        void OnImportQueueComplete(SpreadsheetsContainerBase container)
+        void OnImportQueueComplete()
         {
-            EditorUtility.SetDirty(container);
+            EditorUtility.SetDirty(target);
 
             EditorUtility.ClearProgressBar();
 
-            importQueue.onComplete -= OnImportQueueComplete;
-            importQueue.onOutputChanged -= OnOutputChanged;
-            importQueue.onProgressChanged -= OnProgressChanged;
-            importQueue = null;
+            importer.onComplete -= OnImportQueueComplete;
+            importer.onOutputChanged -= OnOutputChanged;
+            importer.onProgressChanged -= OnProgressChanged;
+            importer = null;
         }
     } 
 }

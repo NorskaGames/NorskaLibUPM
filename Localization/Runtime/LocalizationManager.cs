@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
@@ -8,12 +6,7 @@ namespace NorskaLib.Localization
 {
     public partial class LocalizationManager
     {
-        #region Dependencies
-
         private readonly ILocalizationContainer container;
-
-        #endregion
-
         private const string SerializationKey = "Localization/SelectedLanguage";
 
         public Action<Language> onLanguageChanged;
