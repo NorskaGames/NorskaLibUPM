@@ -54,6 +54,18 @@ namespace NorskaLib.Extensions
             return new Vector2(vector.x, vector.z);
         }
 
+        /// <returns> Short for 'new Vector2(this.vector.x, this.vector.y)'. </returns>
+        public static Vector2 ToXY(this Vector3 vector)
+        {
+            return new Vector2(vector.x, vector.y);
+        }
+
+        /// <returns> Short for 'new Vector2(this.vector.z, this.vector.y)'. </returns>
+        public static Vector2 ToZY(this Vector3 vector)
+        {
+            return new Vector2(vector.z, vector.y);
+        }
+
         // TO DO: add optional origin offset parameter
         public static Vector3 Snap(this Vector3 position, Vector3 cellSize)
         {

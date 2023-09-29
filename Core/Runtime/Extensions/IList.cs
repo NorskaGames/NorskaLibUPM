@@ -2,7 +2,6 @@ using NorskaLib.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace NorskaLib.Extensions
 {
@@ -61,6 +60,7 @@ namespace NorskaLib.Extensions
             return list[index];
         }
 
+        /// <returns> '-1' if no match found. </returns>
         public static int IndexOf<T>(this List<T> list, Func<T, bool> predicate)
         {
             for (int i = 0; i < list.Count; i++)

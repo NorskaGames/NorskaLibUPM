@@ -17,12 +17,6 @@ namespace NorskaLib.Extensions
             }
         }
 
-        [System.Obsolete("Use Transform.localScale = Vector3Utils.Uniform instead.")]
-        public static void SetScale(this Transform instance, float scale)
-        {
-            instance.localScale = new Vector3(scale, scale, scale);
-        }
-
         public static void SetPositionAndRotation(this Transform transform, Transform other)
         {
             transform.SetPositionAndRotation(other.transform.position, other.transform.rotation);

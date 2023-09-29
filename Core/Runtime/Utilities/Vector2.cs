@@ -46,5 +46,12 @@ namespace NorskaLib.Utilities
             => new Vector2(
                 x: Mathf.Clamp(value.x, min.x, max.x),
                 y: Mathf.Clamp(value.y, min.y, max.y));
+
+        public static Vector2 Abs(Vector2 value)
+        {
+            return new Vector2(
+                x: Mathf.Abs(value.x),
+                y: Mathf.Abs(value.y));
+        }
     }
 }

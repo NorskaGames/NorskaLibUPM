@@ -30,7 +30,7 @@ namespace NorskaLib.Extensions
         {
             return new Vector2(x, vector.y);
         }
-        public static Vector2 WithInvertedX(this Vector2 vector)
+        public static Vector2 WithXOpposite(this Vector2 vector)
         {
             return new Vector2(-vector.x, vector.y);
         }
@@ -38,7 +38,7 @@ namespace NorskaLib.Extensions
         {
             return new Vector2(vector.x, y);
         }
-        public static Vector2 WithInvertedY(this Vector2 vector)
+        public static Vector2 WithYOpposite(this Vector2 vector)
         {
             return new Vector2(vector.x, -vector.y);
         }

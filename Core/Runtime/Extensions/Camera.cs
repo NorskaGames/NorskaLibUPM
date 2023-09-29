@@ -19,11 +19,23 @@ namespace NorskaLib.Extensions
             return camera.PointIsInsideViewport(worldPosition, Vector2.zero, Vector2.one);
         }
 
+        public static bool PointIsInsideViewport(this Camera camera, Vector3 worldPosition, out Vector2 normalizedPosition)
+        {
+            return camera.PointIsInsideViewport(worldPosition, Vector2.zero, Vector2.one, out normalizedPosition);
+        }
+
         public static bool PointIsInsideViewport(this Camera camera, Vector3 worldPosition, Vector2 offscreenMarginsMin, Vector2 offscreenMarginsMax)
         {
-            var screenPosNormalized = camera.WorldToScreenPointNormalized(worldPosition);
-            return screenPosNormalized.y.IsBetween(offscreenMarginsMin.y, offscreenMarginsMax.y) 
-                && screenPosNormalized.x.IsBetween(offscreenMarginsMin.x, offscreenMarginsMax.x);
+            var normalizedPosition = camera.WorldToScreenPointNormalized(worldPosition);
+            return normalizedPosition.y.IsBetween(offscreenMarginsMin.y, offscreenMarginsMax.y) 
+                && normalizedPosition.x.IsBetween(offscreenMarginsMin.x, offscreenMarginsMax.x);
+        }
+
+        public static bool PointIsInsideViewport(this Camera camera, Vector3 worldPosition, Vector2 offscreenMarginsMin, Vector2 offscreenMarginsMax, out Vector2 normalizedPosition)
+        {
+            normalizedPosition = camera.WorldToScreenPointNormalized(worldPosition);
+            return normalizedPosition.y.IsBetween(offscreenMarginsMin.y, offscreenMarginsMax.y)
+                && normalizedPosition.x.IsBetween(offscreenMarginsMin.x, offscreenMarginsMax.x);
         }
     }
 }

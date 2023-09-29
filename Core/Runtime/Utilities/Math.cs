@@ -347,6 +347,13 @@ namespace NorskaLib.Utilities
         }
 
         // By DylanW https://answers.unity.com/questions/556480/rotate-the-shortest-way.html
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns> An angle in +180...-180 range, where positive result indicates that a rotation 
+        /// from 'from' to 'to' will be clockwise and negative result indicates the opposite. </returns>
         public static float ShortestRotationAngle(float from, float to)
         {
             // If from or to is a negative, we have to recalculate them.
