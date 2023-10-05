@@ -15,7 +15,7 @@ namespace NorskaLib.UI
         /// <returns> A markup symbols matching TMPro sprite inlining syntax like "sprite name=\spriteName\" </returns>
         public static string WrapInlineSprite(string spriteName)
         {
-            return $"<sprite name =\"{spriteName}\">";
+            return $"<sprite name=\"{spriteName}\">";
         }
     }
 
