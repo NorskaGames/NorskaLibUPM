@@ -6,6 +6,19 @@ using UnityEngine.EventSystems;
 
 namespace NorskaLib.UI
 {
+    public struct TMProUtils
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="spriteName"></param>
+        /// <returns> A markup symbols matching TMPro sprite inlining syntax like "sprite name=\spriteName\" </returns>
+        public static string WrapInlineSprite(string spriteName)
+        {
+            return $"<sprite name =\"{spriteName}\">";
+        }
+    }
+
     public struct UIUtils
     {
         [Serializable]
