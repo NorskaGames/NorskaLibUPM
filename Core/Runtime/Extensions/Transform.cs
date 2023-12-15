@@ -26,5 +26,15 @@ namespace NorskaLib.Extensions
         {
             transform.SetLocalPositionAndRotation(other.transform.position, other.transform.rotation);
         }
+
+        public static void ClearPositionAndRotation(this Transform transform)
+        {
+            transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+        }
+
+        public static void ClearLocalPositionAndRotation(this Transform transform)
+        {
+            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        }
     }
 }

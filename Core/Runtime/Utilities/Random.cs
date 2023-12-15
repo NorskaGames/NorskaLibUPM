@@ -23,7 +23,7 @@ namespace NorskaLib.Utilities
         public static bool Bool(float chance, out float dice)
         {
             dice = Random.Range(0, 0.99f);
-            return dice < Mathf.Clamp01(chance);
+            return Mathf.Clamp01(chance) >= dice;
         }
         /// <summary>
         /// Returns random bool value, based on chance; for chance <= 0.00 always returns FALSE; for chance >= 1.00 always returns TRUE.

@@ -28,8 +28,7 @@ namespace NorskaLib
             return result;
         }
 
-        // TO DO:
-        public static T[,] Turn<T>(T[,] original, bool clockwise = true, bool full = false)
+        public static T[,] Turn90<T>(T[,] original, bool clockwise = true)
         {
             var I = original.GetLength(0);
             var J = original.GetLength(1);
@@ -38,7 +37,10 @@ namespace NorskaLib
 
             for (int i = 0; i < I; i++)
                 for (int j = 0; j < J; j++)
-                    result[j, i] = original[I - 1 - i, j];
+                    if (clockwise)
+                        result[j, i] = original[I - 1 - i, j];
+                    else
+                        result[j, i] = original[i, J - 1 - j];
 
             return result;
         }

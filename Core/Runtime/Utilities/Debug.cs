@@ -6,7 +6,7 @@ namespace NorskaLib.Utilities
 {
     public struct DebugUtils
     {
-        public static void DrawPolyline(Vector3[] vertices, bool loop, Color color, float duration = 1)
+        public static void DrawPolyline(Vector3[] vertices, bool loop, Color color, float duration = 0)
         {
             if (loop)
                 Debug.DrawLine(vertices.Last(), vertices.First(), color, duration);
@@ -14,7 +14,7 @@ namespace NorskaLib.Utilities
             for (int i = 1; i < vertices.Length; i++)
                 Debug.DrawLine(vertices[i - 1], vertices[i], color, duration);
         }
-        public static void DrawPolylineLazy(IEnumerable<Vector3> vertices, bool loop, Color color, float duration = 1)
+        public static void DrawPolylineLazy(IEnumerable<Vector3> vertices, bool loop, Color color, float duration = 0)
         {
             var firstSet = false;
             var frstVertex = default(Vector3);
@@ -37,7 +37,7 @@ namespace NorskaLib.Utilities
                 Debug.DrawLine(frstVertex, prevVertex, color, duration);
         }
 
-        public static void DrawCircle(Vector3 origin, float radius, Color color, float duration = 1, int subdivision = 8)
+        public static void DrawCircle(Vector3 origin, float radius, Color color, float duration = 0, int subdivision = 8)
         {
             IEnumerable<Vector3> GetVerticesLazy()
             {
@@ -51,10 +51,19 @@ namespace NorskaLib.Utilities
             DrawPolylineLazy(GetVerticesLazy(), true, color, duration);
         }
 
+        public static void DrawCrossPoint(Vector3 position, Vector3 size, Color color, float duration = 0)
+        {
+            var halfsize = size * 0.5f;
+            Debug.DrawLine(position + Vector3.up * halfsize.y, position + Vector3.down * halfsize.y, color, duration);
+            Debug.DrawLine(position + Vector3.left * halfsize.x, position + Vector3.right * halfsize.x, color, duration);
+            Debug.DrawLine(position + Vector3.forward * halfsize.z, position + Vector3.back * halfsize.z, color, duration);
+        }
+        public static void DrawCrossPoint(Vector3 position, float size, Color color, float duration = 0)
+        {
+            DrawCrossPoint(position, Vector3Utils.Uniform(size), color, duration);
+        }
 
-        // TO DO:
-        // Switch to lazy iterating
-        public static void DrawSector(Vector3 origin, float facing, float span, float radius, Color color, float duration = 1, int subdivision = 2)
+        public static void DrawSector(Vector3 origin, float facing, float span, float radius, Color color, float duration = 0, int subdivision = 2)
         {
             IEnumerable<Vector3> GetVerticesLazy()
             {
@@ -75,7 +84,7 @@ namespace NorskaLib.Utilities
 
             DrawPolylineLazy(GetVerticesLazy(), true, color, duration);
         }
-        public static void DrawSector(Vector3 origin, float facing, float span, float radiusInner, float radiusOuter, Color color, float duration = 1, int subdivision = 2)
+        public static void DrawSector(Vector3 origin, float facing, float span, float radiusInner, float radiusOuter, Color color, float duration = 0, int subdivision = 2)
         {
             IEnumerable<Vector3> GetVerticesLazy()
             {

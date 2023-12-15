@@ -67,6 +67,9 @@ namespace NorskaLib.Extensions
             return -1 * vector;
         }
 
+        /// <summary>
+        /// Short for 'new Vector2(this.vector.y, this.vector.x)'
+        /// </summary>
         public static Vector2 Swapped(this Vector2 vector)
         {
             return new Vector2(vector.y, vector.x);

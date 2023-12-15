@@ -64,10 +64,5 @@ namespace NorskaLib.Utilities
 
             return stringBuilder.ToString();
         }
-
-        public static string Format(string text, Color color)
-        {
-            return $"<color=#{GetHEXA(color)}>{text}</color>";
-        }
     }
 }
