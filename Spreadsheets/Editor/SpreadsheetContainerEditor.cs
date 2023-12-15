@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace NorskaLib.Spreadsheets
@@ -46,7 +47,9 @@ namespace NorskaLib.Spreadsheets
             base.OnInspectorGUI();
 
             if (GUI.changed)
+            {
                 EditorUtility.SetDirty(target);
+            }
         }
 
         void DrawImportGUI(object content)

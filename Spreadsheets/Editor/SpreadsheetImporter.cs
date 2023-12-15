@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -13,6 +14,8 @@ namespace NorskaLib.Spreadsheets
     public class SpreadsheetImporter
     {
         public const string URLFormat = @"https://docs.google.com/spreadsheets/d/{0}/gviz/tq?tqx=out:csv&sheet={1}";
+        private readonly CultureInfo dotCulture = new CultureInfo("en-US");
+        private readonly CultureInfo commaCulture = new CultureInfo("fr-FR");
 
         private readonly object targetObject;
         private readonly FieldInfo[] targetListsFields;
@@ -111,7 +114,7 @@ namespace NorskaLib.Spreadsheets
 
             Output = $"Analysing headers...";
 
-            var headersRaw = Utilities.Split(rawTable[0]);
+            var headersRaw = Split(rawTable[0]);
 
             var idHeaderIdx = -1;
             var headers = new List<string>();
@@ -133,7 +136,7 @@ namespace NorskaLib.Spreadsheets
             var rows = new List<string[]>();
             for (int i = 1; i < rawTable.Length; i++)
             {
-                var substrings = Utilities.Split(rawTable[i]);
+                var substrings = Split(rawTable[i]);
                 if (idHeaderIdx != -1 && string.IsNullOrEmpty(substrings[idHeaderIdx]))
                     continue;
 
@@ -170,7 +173,7 @@ namespace NorskaLib.Spreadsheets
 
                 for (int i = 0; i < headers.Count; i++)
                     if (headersToFields.TryGetValue(headers[i], out var field))
-                        field.SetValue(item, Utilities.Parse(row[i], field.FieldType));
+                        field.SetValue(item, Parse(row[i], field.FieldType));
 
                 list.Add(item);
             }
@@ -180,6 +183,76 @@ namespace NorskaLib.Spreadsheets
             Progress += 1 / 3f * ProgressElementDelta;
 
             #endregion
+        }
+
+        public string[] Split(string line)
+        {
+            bool isInsideQuotes = false;
+            List<string> result = new List<string>();
+
+            string temp = string.Empty;
+            for (int i = 0; i < line.Length; i++)
+                if (line[i] == '"')
+                {
+                    isInsideQuotes = !isInsideQuotes;
+
+                    if (i == line.Length - 1)
+                        result.Add(temp);
+                }
+                else
+                {
+                    if (!isInsideQuotes && line[i] == ',')
+                    {
+                        result.Add(temp);
+                        temp = string.Empty;
+                    }
+                    else
+                        temp += line[i];
+                }
+
+            return result.ToArray();
+        }
+
+        public static object Parse(string s, Type type)
+        {
+            var result = default(object);
+
+            if (type == typeof(string))
+                return s;
+            else if (type == typeof(int))
+            {
+                if (int.TryParse(s, out var resultInt))
+                    return resultInt;
+            }
+            else if(type == typeof(bool))
+            {
+                if (bool.TryParse(s, out var resultBool))
+                    return resultBool;
+            }
+            else if (type == typeof(float))
+            {
+                if (float.TryParse(s.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var resultFloat))
+                    return resultFloat;
+            }
+            else if (type == typeof(double))
+            {
+                if (double.TryParse(s.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var resultFloat))
+                    return resultFloat;
+            }
+            else if (type.IsEnum)
+            {
+                try
+                {
+                    result = Enum.Parse(type, s, true);
+                }
+                catch (ArgumentException)
+                {
+                    result = default(object);
+                }
+                return result;
+            }
+
+            return result;
         }
     }
 }

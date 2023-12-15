@@ -9,10 +9,24 @@ namespace NorskaLib.Spreadsheets
         Binary
     }
 
+    public enum SpreadsheetDecimalFormat
+    {
+        Dot,
+        Comma
+    }
+
     public abstract class SpreadsheetsContainerBase : ScriptableObject
     {
         #region Editor
 #if UNITY_EDITOR
+
+        #region Import
+
+        /// <summary>
+        /// NOTE: This field is used in the Editor only and should not be adressed in the build!
+        /// </summary>
+        [SerializeField, HideInInspector]
+        public bool foldoutImportGUI;
 
         /// <summary>
         /// NOTE: This field is used in the Editor only and should not be adressed in the build!
@@ -26,11 +40,9 @@ namespace NorskaLib.Spreadsheets
         [SerializeField, HideInInspector]
         public List<string> selectedTogglesIds;
 
-        /// <summary>
-        /// NOTE: This field is used in the Editor only and should not be adressed in the build!
-        /// </summary>
-        [SerializeField, HideInInspector]
-        public bool foldoutImportGUI;
+        #endregion
+
+        #region Serialization
 
         /// <summary>
         /// NOTE: This field is used in the Editor only and should not be adressed in the build!
@@ -51,7 +63,9 @@ namespace NorskaLib.Spreadsheets
         public string serializationFileName = "Configs.v0.1";
 
         [SerializeField, HideInInspector]
-        public SpreadsheetSerializationFormat serializationFormat;
+        public SpreadsheetSerializationFormat serializationFormat; 
+
+        #endregion
 
 #endif
         #endregion
