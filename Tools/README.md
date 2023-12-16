@@ -1,5 +1,5 @@
 # NorskaLib Tools
-Switch language: RUS | **ENG**
+Switch language: [RUS](https://github.com/NorskaGames/NorskaLibUPM/blob/master/Tools/README.ru.md) | **ENG**
 
 Contains scripts for better UnityEditor work expirience.
 
