@@ -21,28 +21,43 @@ _**Hint:** Design your database as any relational database (at least stick to 1s
 
 ## Setting up the Container
 
-Define your custom DataContainer and any amount of Data classes as shown below:
+Define your custom SpreadsheetContainer and any amount of Data classes as shown below:
 ```
 using NorskaLib.Spreadsheets;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-[CreateAssetMenu(fileName = "SpreadsheetContainer", menuName = "PROJECT_NAME/SpreadsheetContainer")]
-public class SpreadsheetContainer : SpreadsheetContainerBase
+namespace NorskaLibExamples.Spreadsheets
 {
-    [PageName("SomeSpreadsheetPage")]
-    public List<ExampleData> ExampleData;
-}
+    [Serializable]
+    public class SpreadshetContent
+    {
+        [SpreadsheetPage("Units")]
+        public List<UnitData> Units;
+        [SpreadsheetPage("Skills")]
+        public List<SkillData> Skills;
+        [SpreadsheetPage("UnitsSkills")]
+        public List<UnitSkillData> UnitsSkills;
+    }
 
-[System.Serializable]
-public class ExampleData
-{
-    public string Id;
-
-    public float SomeFloat;
-    public int SomeInt;
-    public string SomeString;
+    [CreateAssetMenu(fileName = "SpreadsheetContainer", menuName = "SpreadsheetContainer")]
+    public class SpreadsheetContainer : SpreadsheetsContainerBase
+    {
+        [SpreadsheetContent]
+        [SerializeField] SpreadshetContent content;
+        public SpreadshetContent Content => content;
+    }
 }
 ```
 _**Important!** Make sure you spell variables names exactly as columns headers in the spreadsheet._
 
 Now you can create SpreadsheetContainer.asset which u can use like this:
 ![container-inspector](https://drive.google.com/uc?id=16Rg4NIyj5c8-Qjq5phW0konDMRMKNN21)
+
+## Improting the Spreadsheet
+![container-inspector](https://drive.google.com/uc?id=1xT_18Z9hEKpnFv4j71CUMWJJ6zlE8ua-)
+
+## Exporting the Spreadsheet
+You can serialize your spreadsheet as .bin or .json to use it somewhere else (on the dedicated server, for example).
+![container-inspector](https://drive.google.com/uc?id=1_xgex-HyugozNPIyVrS5mEe8EI5ebZZK)

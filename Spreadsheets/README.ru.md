@@ -24,25 +24,37 @@ _**Подсказка:** Проектируйте базу данных как �
 Создайте класс DataContainer и произвольный набор Data-классов как в примере ниже:
 ```
 using NorskaLib.Spreadsheets;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-[CreateAssetMenu(fileName = "SpreadsheetContainer", menuName = "PROJECT_NAME/SpreadsheetContainer")]
-public class SpreadsheetContainer : SpreadsheetContainerBase
+namespace NorskaLibExamples.Spreadsheets
 {
-    [PageName("SomeSpreadsheetPage")]
-    public List<ExampleData> ExampleData;
-}
+    [Serializable]
+    public class SpreadshetContent
+    {
+        [SpreadsheetPage("Units")]
+        public List<UnitData> Units;
+        [SpreadsheetPage("Skills")]
+        public List<SkillData> Skills;
+        [SpreadsheetPage("UnitsSkills")]
+        public List<UnitSkillData> UnitsSkills;
+    }
 
-[System.Serializable]
-public class ExampleData
-{
-    public string Id;
-
-    public float SomeFloat;
-    public int SomeInt;
-    public string SomeString;
+    [CreateAssetMenu(fileName = "SpreadsheetContainer", menuName = "SpreadsheetContainer")]
+    public class SpreadsheetContainer : SpreadsheetsContainerBase
+    {
+        [SpreadsheetContent]
+        [SerializeField] SpreadshetContent content;
+        public SpreadshetContent Content => content;
+    }
 }
 ```
 _**Важно!** Убедитесь, что имена переменных совпадают с именами столбцов в таблице._
 
-Теперь вы можете создать SpreadsheetContainer.asset и импортировать в него таблицу как показано на примере ниже:
-![container-inspector](https://drive.google.com/uc?id=16Rg4NIyj5c8-Qjq5phW0konDMRMKNN21)
+## Импорт таблицы
+![container-inspector](https://drive.google.com/uc?id=1xT_18Z9hEKpnFv4j71CUMWJJ6zlE8ua-)
+
+## Экспорт таблицы
+Вы можете экспортировать таблицу в форматах .bin и .json, например, для использования на сервере.
+![container-inspector](https://drive.google.com/uc?id=1_xgex-HyugozNPIyVrS5mEe8EI5ebZZK)
