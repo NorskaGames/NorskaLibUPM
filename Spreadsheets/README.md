@@ -3,6 +3,9 @@ Switch language: [RUS](https://github.com/NorskaGames/NorskaLibUPM/blob/master/S
 
 Unity Editor tool, which helps design game-logic database (such as characters, weapons, items stats etc.) using Google Spreadsheets.
 
+## Compatibility
+- Unity Engine 2021.3+
+
 ## Installation
 To install this package using Unity Package Manager simply insert this address:
 ```
