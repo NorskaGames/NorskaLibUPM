@@ -1,7 +1,6 @@
-using NorskaLib.Utilities;
 using UnityEngine;
 
-namespace NorskaLib.Tools.Demo
+namespace NorskaLib.Utilities.Demo
 {
     public class ArrowGizmosDemo : MonoBehaviour
 	{

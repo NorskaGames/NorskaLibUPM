@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace NorskaLib.Tools
+namespace NorskaLib.Extensions
 {
     public struct MenuBarExtensions
     {

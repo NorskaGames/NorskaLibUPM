@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace NorskaLib.Tools
+namespace NorskaLib.Utilities
 {
     public sealed class ReadMeComponent : MonoBehaviour
     {

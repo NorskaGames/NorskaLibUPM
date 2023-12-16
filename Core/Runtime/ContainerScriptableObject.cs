@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NorskaLib.Tools
+namespace NorskaLib.Extensions
 {
     public abstract class ContainerScriptableObject<T> : ScriptableObject, IEnumerable<T> where T : class
     {
-        private const string ModificationExceptionText = "ContainerScriptableObject<> internal collection is immutable by design!";
+        //private const string ModificationExceptionText = "ContainerScriptableObject<> internal collection is immutable by design!";
 
         [SerializeField] protected T[] collection;
 
@@ -17,7 +17,7 @@ namespace NorskaLib.Tools
         {
             get => collection[index];
 
-            set => throw new System.NotSupportedException(ModificationExceptionText);
+            set => collection[index] = value; //throw new System.NotSupportedException(ModificationExceptionText);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -60,7 +60,7 @@ namespace NorskaLib.Tools
                 if (predicate(item))
                     return item;
 
-            Debug.LogWarning($"No '{typeof(T).Name}' is '{this.name}' matching predicate. Returning default.");
+            Debug.LogWarning($"No '{typeof(T).Name}' in '{this.name}({this.GetType().Name})' matching predicate. Returning default.");
             return GetDefault();
         }
     }

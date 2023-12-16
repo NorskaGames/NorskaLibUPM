@@ -1,11 +1,9 @@
-using NorskaLib.Extensions;
-using NorskaLib.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NorskaLib.Tools
+namespace NorskaLib.Utilities
 {
     [System.Flags]
     public enum ModifierKeys
@@ -349,7 +347,7 @@ namespace NorskaLib.Tools
             => EndBody();
 
         public void BeginSwitch(string variableName)
-        => BeginBody($"switch ({variableName})");
+            => BeginBody($"switch ({variableName})");
         public void BeginCase(string value)
         {
             AddLine($"case {value}:");
@@ -365,6 +363,8 @@ namespace NorskaLib.Tools
             AddLine($"default:");
             tabulation++;
         }
+        public void BeginCaseBraces(string value)
+            => BeginBody($"case {value}:");
         public void EndCaseReturn(string expression)
         {
             AddReturn(expression);
@@ -384,6 +384,12 @@ namespace NorskaLib.Tools
         {
             AddLine("break;");
             tabulation--;
+        }
+        public void EndCaseBraces()
+        {
+            AddLine("break;");
+            tabulation--;
+            AddLine("}");
         }
         public void EndSwitch()
             => EndBody();

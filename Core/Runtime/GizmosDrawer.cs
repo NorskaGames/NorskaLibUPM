@@ -1,10 +1,9 @@
 ﻿using NorskaLib.Extensions;
-using NorskaLib.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace NorskaLib.Tools
+namespace NorskaLib.Utilities
 {
     public enum GizmosDrawerModes 
     { 

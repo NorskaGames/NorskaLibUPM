@@ -61,13 +61,26 @@ namespace NorskaLib.Extensions
         }
 
         /// <returns> '-1' if no match found. </returns>
-        public static int IndexOf<T>(this List<T> list, Func<T, bool> predicate)
+        public static int IndexOf<T>(this List<T> list, Func<T, bool> query)
         {
             for (int i = 0; i < list.Count; i++)
-                if (predicate(list[i]))
+                if (query(list[i]))
                     return i;
 
             return -1;
+        }
+
+        public static bool TryGet<T>(this IList<T> list, Func<T, bool> query, out T result)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                result = list[i];
+                if (query(result))
+                    return true;
+            }
+
+            result = default(T);
+            return false;
         }
 
         /// <returns> TRUE - if result is still inside collection range. </returns>

@@ -1,6 +1,6 @@
 {
   "name": "com.norska-lib.tools",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "dependencies": {
     "com.norska-lib.core": "0.1.0+"
   },
