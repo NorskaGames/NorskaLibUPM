@@ -41,7 +41,7 @@ namespace NorskaLibExamples.Spreadsheets
         public List<UnitSkillData> UnitsSkills;
     }
 
-    [CreateAssetMenu(fileName = "DataContainer", menuName = "Custom/DataContainer")]
+    [CreateAssetMenu(fileName = "SpreadsheetContainer", menuName = "SpreadsheetContainer")]
     public class SpreadsheetContainer : SpreadsheetsContainerBase
     {
         [SpreadsheetContent]
