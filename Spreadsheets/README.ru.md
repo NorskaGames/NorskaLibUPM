@@ -11,8 +11,6 @@
 ```
 https://github.com/NorskaGames/NorskaLibUPM.git?path=/Spreadsheets
 ```
-
-# Руководство
 ## Настройка таблицы
 
 Создайте таблицу и убедитесь, что она доступна по ссылке:
