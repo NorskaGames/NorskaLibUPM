@@ -5,7 +5,7 @@
         "NorskaLib.Core",
         "Unity.InputSystem",
         "Unity.TextMeshPro",
-        "Demigant.DoTween"
+        "DOTween.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
