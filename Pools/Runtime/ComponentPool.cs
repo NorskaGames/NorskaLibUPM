@@ -51,12 +51,17 @@ namespace NorskaLib.Pools
 
         private Stack<C> stack;
 
+        private bool isInitialized;
+        protected virtual void Initialize()
+        {
+            stack ??= new Stack<C>(capacity);
+        }
+
         protected abstract C Instantiate();
 
         public C Allocate()
         {
-            if (stack is null)
-                stack = new Stack<C>(capacity);
+            stack ??= new Stack<C>(capacity);
 
             var instance = stack.Count > 0
                 ? stack.Pop()
@@ -82,16 +87,14 @@ namespace NorskaLib.Pools
         public C Allocate(Vector3 position, Quaternion rotation)
         {
             var instance = Allocate();
-            instance.transform.position = position;
-            instance.transform.rotation = rotation;
+            instance.transform.SetPositionAndRotation(position, rotation);
 
             return instance;
         }
 
         public void Deallocate(C instance)
         {
-            if (stack is null)
-                stack = new Stack<C>(capacity);
+            stack ??= new Stack<C>(capacity);
 
             if (instance is IPoolable poolable)
                 poolable.OnDeallocated();
@@ -110,8 +113,6 @@ namespace NorskaLib.Pools
             }
         }
 
-        #region MonoBehaviour
-
         protected virtual void Awake()
         {
             stack ??= new Stack<C>(capacity);
@@ -127,8 +128,5 @@ namespace NorskaLib.Pools
             foreach (var instance in prewarmedTake)
                 stack.Push(instance);
         }
-
-        #endregion
-
     }
 }
