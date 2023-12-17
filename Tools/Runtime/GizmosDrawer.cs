@@ -1,9 +1,9 @@
 ﻿using NorskaLib.Extensions;
+using NorskaLib.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace NorskaLib.Utilities
+namespace NorskaLib.Tools
 {
     public enum GizmosDrawerModes 
     { 
@@ -31,7 +31,6 @@ namespace NorskaLib.Utilities
     {
         public GizmosDrawerShapes shape;
 
-        [FormerlySerializedAs("offset")]
         public Vector3 positionOffset;
 
         private bool ShowEulerOffsetEditor
